@@ -1,0 +1,1356 @@
+local place_id = 126509999114328
+
+if game.PlaceId == place_id then
+
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+local _Version = "Cyan-99 v1-beta"
+
+local Window = Rayfield:CreateWindow({
+   Name = _Version,
+   Icon = 0, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
+   LoadingTitle = "Cyan Hubs",
+   LoadingSubtitle = "by 4NTHOcyan",
+   ShowText = "Rayfield", -- for mobile users to unhide Rayfield, change if you'd like
+   Theme = "DarkBlue", -- Check https://docs.sirius.menu/rayfield/configuration/themes
+
+   ToggleUIKeybind = "K", -- The keybind to toggle the UI visibility (string like "K" or Enum.KeyCode)
+
+   DisableRayfieldPrompts = true,
+   DisableBuildWarnings = false, -- Prevents Rayfield from emitting warnings when the script has a version mismatch with the interface.
+
+   ConfigurationSaving = {
+      Enabled = false,
+      FolderName = nil, -- Create a custom folder for your hub/game
+      FileName = "Big Hub"
+   },
+
+   Discord = {
+      Enabled = false, -- Prompt the user to join your Discord server if their executor supports it
+      Invite = "noinvitelink", -- The Discord invite code, do not include Discord.gg/. E.g. Discord.gg/ ABCD would be ABCD
+      RememberJoins = true -- Set this to false to make them join the Discord every time they load it up
+   },
+
+   KeySystem = false, -- Set this to true to use our key system
+   KeySettings = {
+      Title = "Untitled",
+      Subtitle = "Key System",
+      Note = "No method of obtaining the key is provided", -- Use this to tell the user how to get a key
+      FileName = "Key", -- It is recommended to use something unique, as other scripts using Rayfield may overwrite your key file
+      SaveKey = true, -- The user's key will be saved, but if you change the key, they will be unable to use your script
+      GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
+      Key = {"Hello"} -- List of keys that the system will accept, can be RAW file links (pastebin, github, etc.) or simple strings ("hello", "key22")
+   }
+})
+
+--// Local VARs
+local items = workspace.Items
+
+local player = game.Players.LocalPlayer
+local charr = player.Character
+local HRP = charr:FindFirstChild("HumanoidRootPart")
+local my_head = game.Players.LocalPlayer.Character.Head
+local MyUserID = game.Players.LocalPlayer.UserId
+
+local skull_podium_flag = false
+local run_speed_flag = false
+local jump_power_flag = false
+local auto_cgem_flag = false
+local health_flag = false
+local kill_flag = false
+local always_day_flag = false
+
+local jungle_key1 = workspace.Map.Landmarks["Jungle Temple"].Functional.Podiums:GetChildren()[1]["Jungle Key"].Main
+local jungle_key2 = workspace.Map.Landmarks["Jungle Temple"].Functional.Podiums:GetChildren()[2]["Jungle Key"].Main
+local jungle_key3 = workspace.Map.Landmarks["Jungle Temple"].Functional.Podiums:GetChildren()[3]["Jungle Key"].Main
+local jungle_key4 = workspace.Map.Landmarks["Jungle Temple"].Functional.Podiums:GetChildren()[4]["Jungle Key"].Main
+
+local LIGHT = game:GetService("Lighting")
+
+local workbench_loc = workspace.Map.Campground.CraftingBench.TouchZone -- .CFrame
+local FIREZONE = workspace.Map.Campground.MainFire.InnerTouchZone
+local stronghold_loc = workspace.Map.Landmarks
+local anvil_loc = workspace.Map.Landmarks
+local upg_hut = workspace.Map.Landmarks
+
+local missing_kids_folder_loc = workspace.Map:WaitForChild("MissingKids"):GetAttributes()
+
+local jung_temp_stair = workspace.Map.Landmarks["Jungle Temple"].Functional.Stairwell.Moving["0"]
+
+local NPC_enemies = workspace.Characters
+
+local damage_hash = "1_"..tostring(MyUserID)
+
+local function queryBears()
+    for _, b in ipairs(NPC_enemies:GetChildren()) do
+        if b:IsA("Model") and string.find(b.Name, "Bear") then
+            for _, h in pairs(b:GetChildren()) do
+                if h:IsA("Part") and string.find(h.Name, "HumanoidRootPart") then
+                    h.CanQuery = true
+                end
+                task.wait()
+            end
+        end
+    end
+
+end  
+
+Rayfield:Notify({
+    Title = "Infrastructure:",
+    Content = "Querying models and detecting NPCs, please wait...",
+    Duration = 12,
+    Image = 4483362458,
+}) 
+
+-- pcall(queryBears)
+
+----------------------------------------
+Rayfield:Notify({
+    Title = "Welcome!",
+    Content = "Thanks for using CyanHub by 4NTHOcyan",
+    Duration = 6.5,
+    Image = "file-heart",
+})
+
+local MainTab = Window:CreateTab("Main", "blend") -- Title, Image
+local MoveTab = Window:CreateTab("Teleport", "move") -- Title, Image
+local BringTab = Window:CreateTab("Bring", "briefcase") -- Title, Image
+local SkullTab = Window:CreateTab("Skulls", "skull") -- Title, Image
+
+
+--// create main tab 
+
+local mainsection1 = MainTab:CreateSection("Player:")
+
+local SpeedSlider = MainTab:CreateSlider({
+        Name = "Speed",
+        Range = {16, 200},
+        Increment = 2,
+        Suffix = "🏃‍♂️",
+        CurrentValue = 16,
+        Flag = "SpeedSlider1", -- A flag is the identifier for the configuration file; make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+        Callback = function(Value)
+            while true do
+                task.wait()
+                charr.Humanoid.WalkSpeed = Value
+            end
+        end,
+    })
+
+local JumpSlider = MainTab:CreateSlider({
+    Name = "Jump",
+    Range = {7, 200},
+    Increment = 4,
+    Suffix = "",
+    CurrentValue = 7,
+    Flag = "JumpSlider1", -- A flag is the identifier for the configuration file; make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+    Callback = function(Value)
+    
+        charr.Humanoid.JumpHeight = Value
+        charr.Humanoid.JumpPower = Value
+
+    end,
+})
+
+local HealthToggle = MainTab:CreateToggle({
+    Name = "Invincible",
+    CurrentValue = false,
+    Flag = "Toggle1", -- A flag is the identifier for the configuration file; make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+    Callback = function(Value)
+        health_flag = Value
+
+        while health_flag do
+            local args = {
+	            -1/0
+            }
+            game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("DamagePlayer"):FireServer(unpack(args))
+
+            task.wait(1.1)
+        end
+    end,
+})
+
+local KILLToggle = MainTab:CreateToggle({
+    Name = "Kill Aura",
+    CurrentValue = false,
+    Flag = "Toggle1", -- A flag is the identifier for the configuration file; make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+    Callback = function(Value)
+        kill_flag = Value
+
+        if kill_flag then
+            Rayfield:Notify({
+                Title = "Notification",
+                Content = "Kill Aura enabled, please wait...",
+                Duration = 12.5,
+                Image = 4483362458,
+            })
+
+            task.wait()
+            pcall(queryBears)
+
+            Rayfield:Notify({
+                Title = "Notification",
+                Content = "EQUIP A TOOL TO KILL (AXE, MORNINGSTAR, ETC.)",
+                Duration = 12.5,
+                Image = 4483362458,
+            })
+
+        end
+
+        while kill_flag do
+
+            local includeparams = OverlapParams.new()
+            local excludeparams = OverlapParams.new()
+            includeparams.FilterType = Enum.RaycastFilterType.Include
+            includeparams.FilterDescendantsInstances = {NPC_enemies}
+            excludeparams.FilterType = Enum.RaycastFilterType.Exclude
+            excludeparams.FilterDescendantsInstances = {}
+            local worldrootradius = workspace:GetPartBoundsInRadius(HRP.Position, 180, includeparams, excludeparams)
+
+            for _, v in ipairs(worldrootradius) do
+                if v:IsA("Part") and string.find(v.Name, "HumanoidRootPart") then
+                    --v.CanQuery = true
+                    --print(v.Parent)
+                    for _, item in pairs(game:GetService("Players").LocalPlayer.Inventory:GetChildren()) do
+    
+                        if string.find(item.Name, "Old Axe") then
+                
+                            local args = {
+                                v.Parent,
+                                game.Players.LocalPlayer.Inventory:WaitForChild("Old Axe"),
+                                damage_hash,
+                                v.CFrame * CFrame.new(0,0,0)
+                            }
+                            game.ReplicatedStorage.RemoteEvents.ToolDamageObject:InvokeServer(unpack(args))
+                        elseif string.find(item.Name, "Good Axe") then
+                            local args = {
+                                v.Parent,
+                                game.Players.LocalPlayer.Inventory:WaitForChild("Good Axe"),
+                                damage_hash,
+                                v.CFrame * CFrame.new(0,0,0)
+                            }
+                            game.ReplicatedStorage.RemoteEvents.ToolDamageObject:InvokeServer(unpack(args))
+
+                        elseif string.find(item.Name, "Strong Axe") then
+                            local args = {
+                                v.Parent,
+                                game.Players.LocalPlayer.Inventory:WaitForChild("Strong Axe"),
+                                damage_hash,
+                                v.CFrame * CFrame.new(0,0,0)
+                            }
+                            game.ReplicatedStorage.RemoteEvents.ToolDamageObject:InvokeServer(unpack(args))
+
+                        elseif string.find(item.Name, "Chainsaw") then
+                            local args = {
+                                v.Parent,
+                                game.Players.LocalPlayer.Inventory:WaitForChild("Chainsaw"),
+                                damage_hash,
+                                v.CFrame * CFrame.new(0,0,0)
+                            }
+                            game.ReplicatedStorage.RemoteEvents.ToolDamageObject:InvokeServer(unpack(args))
+                        elseif string.find(item.Name, "Spear") then
+                            local args = {
+                                v.Parent,
+                                game.Players.LocalPlayer.Inventory:WaitForChild("Spear"),
+                                damage_hash,
+                                v.CFrame * CFrame.new(0,0,0)
+                        }
+                        game.ReplicatedStorage.RemoteEvents.ToolDamageObject:InvokeServer(unpack(args))
+                        elseif string.find(item.Name, "Morningstar") then
+                            local args = {
+                                v.Parent,
+                                game.Players.LocalPlayer.Inventory:WaitForChild("Morningstar"),
+                                damage_hash,
+                                v.CFrame * CFrame.new(0,0,0)
+                        }
+                        game.ReplicatedStorage.RemoteEvents.ToolDamageObject:InvokeServer(unpack(args))
+                        elseif string.find(item.Name, "Poison Claws") then
+                            local args = {
+                                v.Parent,
+                                game.Players.LocalPlayer.Inventory:WaitForChild("Poison Claws"),
+                                damage_hash,
+                                v.CFrame * CFrame.new(0,0,0)
+                        }
+                        game.ReplicatedStorage.RemoteEvents.ToolDamageObject:InvokeServer(unpack(args))
+                        elseif string.find(item.Name, "Obsidiron Hammer") then
+                            local args = {
+                                v.Parent,
+                                game.Players.LocalPlayer.Inventory:WaitForChild("Obsidiron Hammer"),
+                                damage_hash,
+                                v.CFrame * CFrame.new(0,0,0)
+                        }
+                        game.ReplicatedStorage.RemoteEvents.ToolDamageObject:InvokeServer(unpack(args))
+                        elseif string.find(item.Name, "Katana") then
+                            local args = {
+                                v.Parent,
+                                game.Players.LocalPlayer.Inventory:WaitForChild("Katana"),
+                                damage_hash,
+                                v.CFrame * CFrame.new(0,0,0)
+                        }
+                        game.ReplicatedStorage.RemoteEvents.ToolDamageObject:InvokeServer(unpack(args))
+                        elseif string.find(item.Name, "Flamethrower") then
+                            local args = {
+                                v.Parent,
+                                game.Players.LocalPlayer.Inventory:WaitForChild("Flamethrower"),
+                                damage_hash,
+                                v.CFrame * CFrame.new(0,0,0)
+                        }
+                        game.ReplicatedStorage.RemoteEvents.ToolDamageObject:InvokeServer(unpack(args))
+                        elseif string.find(item.Name, "Trident") then
+                            local args = {
+                                v.Parent,
+                                game.Players.LocalPlayer.Inventory:WaitForChild("Trident"),
+                                damage_hash,
+                                v.CFrame * CFrame.new(0,0,0)
+                        }
+                        game.ReplicatedStorage.RemoteEvents.ToolDamageObject:InvokeServer(unpack(args))
+                        elseif string.find(item.Name, "Poison Spear") then
+                            local args = {
+                                v.Parent,
+                                game.Players.LocalPlayer.Inventory:WaitForChild("Poison Spear"),
+                                damage_hash,
+                                v.CFrame * CFrame.new(0,0,0)
+                        }
+                        game.ReplicatedStorage.RemoteEvents.ToolDamageObject:InvokeServer(unpack(args))
+                        elseif string.find(item.Name, "Laser Sword") then
+                            local args = {
+                                v.Parent,
+                                game.Players.LocalPlayer.Inventory:WaitForChild("Laser Sword"),
+                                damage_hash,
+                                v.CFrame * CFrame.new(0,0,0)
+                        }
+                        game.ReplicatedStorage.RemoteEvents.ToolDamageObject:InvokeServer(unpack(args))
+                        elseif string.find(item.Name, "Vampire Scythe") then
+                            local args = {
+                                v.Parent,
+                                game.Players.LocalPlayer.Inventory:WaitForChild("Vampire Scythe"),
+                                damage_hash,
+                                v.CFrame * CFrame.new(0,0,0)
+                        }
+                        game.ReplicatedStorage.RemoteEvents.ToolDamageObject:InvokeServer(unpack(args))
+                        elseif string.find(item.Name, "Scythe") then
+                            local args = {
+                                v.Parent,
+                                game.Players.LocalPlayer.Inventory:WaitForChild("Scythe"),
+                                damage_hash,
+                                v.CFrame * CFrame.new(0,0,0)
+                            }
+                        game.ReplicatedStorage.RemoteEvents.ToolDamageObject:InvokeServer(unpack(args))
+                        elseif string.find(item.Name, "Infernal Sword") then
+                            local args = {
+                                v.Parent,
+                                game.Players.LocalPlayer.Inventory:WaitForChild("Infernal Sword"),
+                                damage_hash,
+                                v.CFrame * CFrame.new(0,0,0)
+                            }
+                        game.ReplicatedStorage.RemoteEvents.ToolDamageObject:InvokeServer(unpack(args))
+                        elseif string.find(item.Name, "Ice Sword") then
+                            local args = {
+                                v.Parent,
+                                game.Players.LocalPlayer.Inventory:WaitForChild("Ice Sword"),
+                                damage_hash,
+                                v.CFrame * CFrame.new(0,0,0)
+                            }
+                        game.ReplicatedStorage.RemoteEvents.ToolDamageObject:InvokeServer(unpack(args))
+
+                        end
+                    end
+
+                end
+
+            end
+
+            --print(worldrootradius)
+
+            task.wait()
+        end
+    end,
+})
+local Label = MainTab:CreateLabel("Kill Aura uses your held weapon", "swords")
+local createdatmos = false
+local DaylightToggle = MainTab:CreateToggle({
+    Name = "Night Vision",
+    CurrentValue = false,
+    Flag = "Toggle1", -- A flag is the identifier for the configuration file; make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+    Callback = function(Value) 
+    
+        always_day_flag = Value
+
+        if always_day_flag then
+            Rayfield:Notify({
+                Title = "Notification",
+                Content = "Night Vision enabled",
+                Duration = 10,
+                Image = 4483362458,
+            })
+
+            for _, v in pairs(LIGHT:GetChildren()) do
+                if v.ClassName == "Atmosphere" and string.find(v.Name, "Atmosphere") then
+                    createdatmos = true
+                end
+            end
+
+            if createdatmos == false then 
+                local new_AS = Instance.new("Atmosphere")
+                new_AS.Parent = game.Lighting
+                new_AS.Density = 0
+                new_AS.Color = Color3.new(255,255,255)
+                new_AS.Decay = Color3.new(255,255,255)
+            end
+
+
+        end
+
+
+        while always_day_flag do
+
+            LIGHT.ClockTime = 14.5
+            LIGHT.FogColor = Color3.new(139,139,139)
+            LIGHT.FogEnd = 10000
+            LIGHT.FogStart = 5000
+            task.wait()
+
+        end
+    
+    end,
+
+})
+
+local instaChestButton = MainTab:CreateButton({
+    Name = "Instant-Open Chests",
+    Callback = function()
+        for _, Chest in pairs(workspace.Items:GetChildren()) do
+
+            if Chest.Name == "Item Chest" or Chest.Name == "Item Chest2" or Chest.Name == "Item Chest3" or Chest.Name == "Item Chest4" or Chest.Name == "Item Chest5" or Chest.Name == "Item Chest6" or Chest.Name == "Jungle Chest1" or Chest.Name == "Jungle Chest2" or Chest.Name == "Stronghold Diamond Chest" or Chest.Name == "Stone Chest1" or Chest.Name == "Stone Chest2" or Chest.Name == "Mossy Chest" then
+                
+                for _, m in pairs(Chest:GetChildren()) do
+
+                    if m:IsA("Part") and m.Name == "Main" then
+
+                        if m:FindFirstChild("ProximityAttachment") then
+                            local inner_prox = m.ProximityAttachment.ProximityInteraction
+                            inner_prox.HoldDuration = 0
+                        else
+                            continue
+                        end
+                    else
+                        continue
+                    end
+
+                end
+
+            end
+
+        end
+        task.wait()
+    end,
+})
+
+--// Create Move teleport Tab
+
+local movesection1 = MoveTab:CreateSection("Teleport to:")
+
+local CampButton = MoveTab:CreateButton({
+    Name = "Camp",
+    Callback = function()
+
+        HRP.CFrame = FIREZONE.CFrame * CFrame.new(0,6,0)   
+
+    end,
+})
+
+local TempleButton = MoveTab:CreateButton({
+    Name = "Jungle Temple",
+    Callback = function()
+        if workspace.Map.Landmarks:FindFirstChild("Jungle Temple") then
+
+            HRP.CFrame = jung_temp_stair.CFrame * CFrame.new(0,6,0)   
+        else
+            Rayfield:Notify({
+                Title = "Notification",
+                Content = "No Jungle Temple detected!",
+                Duration = 10,
+                Image = 4483362458,
+            })
+        end
+    end,
+})
+
+local SHButton = MoveTab:CreateButton({
+    Name = "Stronghold",
+    Callback = function()
+        if stronghold_loc:FindFirstChild("Stronghold") then
+            HRP.CFrame = stronghold_loc.Stronghold.Building.Exterior:GetChildren()[12].Model:GetChildren()[2].CFrame * CFrame.new(0,6,0)
+        else
+            Rayfield:Notify({
+                Title = "Notification",
+                Content = "No Stronghold detected!",
+                Duration = 10,
+                Image = 4483362458,
+            })
+        end
+    end,
+})
+
+local SHDCButton = MoveTab:CreateButton({
+    Name = "Stronghold - Diamond Chest",
+    Callback = function()
+        if workspace.Items:FindFirstChild("Stronghold Diamond Chest") then
+            HRP.CFrame = workspace.Items["Stronghold Diamond Chest"].Platform.CFrame * CFrame.new(0,6,0)
+        else
+            Rayfield:Notify({
+                Title = "Notification",
+                Content = "No Diamond Chest detected!",
+                Duration = 10,
+                Image = 4483362458,
+            })
+        end
+    end,
+})
+
+local function anv_func()
+
+    if workspace.Map.Landmarks:FindFirstChild("ToolWorkshopMeteorShower") then
+        HRP.CFrame = CFrame.new(anvil_loc.ToolWorkshopMeteorShower.Functional.ToolBench.Main.CFrame.Position + Vector3.new(-8,8,0)) 
+    elseif workspace.Map.Landmarks:FindFirstChild("ToolWorkshop") then
+        HRP.CFrame = anvil_loc.ToolWorkshop.Functional.ToolBench.Main.CFrame * CFrame.new(-8,8,0)
+    end
+
+
+end
+
+local AnvButton = MoveTab:CreateButton({
+    Name = "Anvil",
+    Callback = function()
+
+        local success, error = pcall(anv_func)
+
+        if not success then
+            Rayfield:Notify({
+                Title = "Notification",
+                Content = "No Anvil Type detected!",
+                Duration = 10,
+                Image = 4483362458,
+            })
+
+            print(error)
+        end
+
+    end,
+})
+
+local FairyButton = MoveTab:CreateButton({
+    Name = "Fairy House",
+    Callback = function()
+        if workspace.Map.Landmarks:FindFirstChild("Fairy House") then
+            local qFpart = workspace.Map.Landmarks["Fairy House"].Main
+            qFpart.CanQuery = true
+            HRP.CFrame = CFrame.new(qFpart.CFrame.Position + Vector3.new(0,8,-10))
+        else
+            Rayfield:Notify({
+                Title = "Notification",
+                Content = "No Fairy House detected!",
+                Duration = 10,
+                Image = 4483362458,
+            })
+        end
+    end,
+})
+
+local CaravanButton = MoveTab:CreateButton({
+    Name = "Furniture Caravan",
+    Callback = function()
+        if workspace.Characters:FindFirstChild("HorseAndCaravan") then
+            HRP.CFrame = CFrame.new(workspace.Characters.HorseAndCaravan.Torso.TorsoMain.CFrame.Position + Vector3.new(0,28,0))
+        else
+            Rayfield:Notify({
+                Title = "Notification",
+                Content = "No Furniture Caravan detected!",
+                Duration = 10,
+                Image = 4483362458,
+            })
+        end
+    end,
+})
+
+local function upgHut_func()
+
+    if workspace.Map.Landmarks:FindFirstChild("ToolSmith") then
+        HRP.CFrame = CFrame.new(upg_hut.ToolSmith["Tool Trader"].Head.CFrame.Position + Vector3.new(0,8,0)) 
+    elseif workspace.Map.Landmarks:FindFirstChild("ToolWorkshop") then
+        HRP.CFrame = upg_hut.ToolSmith["Tool Trader"].Head.CFrame * CFrame.new(0,8,0)
+    end
+
+
+end
+
+local UpgButton = MoveTab:CreateButton({
+    Name = "Upgrades",
+    Callback = function()
+
+        local success, error = pcall(upgHut_func)
+
+        if not success then
+            Rayfield:Notify({
+                Title = "Notification",
+                Content = "No Toolsmith detected!",
+                Duration = 10,
+                Image = 4483362458,
+            })
+
+            print(error)
+        end
+    end,
+})
+
+local function cave1_func()
+
+    if workspace.Map.Landmarks:FindFirstChild("Cave Entrance1") then
+        HRP.CFrame = CFrame.new(workspace.Map.Landmarks["Cave Entrance1"].Main.CFrame.Position + Vector3.new(0,20,0)) 
+    elseif workspace.Map.Landmarks:FindFirstChild("ToolWorkshop") then
+        HRP.CFrame = workspace.Map.Landmarks["Cave Entrance1"].Main.CFrame * CFrame.new(0,20,0)
+    end
+
+
+end
+
+local Cave1Button = MoveTab:CreateButton({
+    Name = "Cave Entrance",
+    Callback = function()
+
+        local success, error = pcall(cave1_func)
+
+        if not success then
+            Rayfield:Notify({
+                Title = "Notification",
+                Content = "No Cave Entrance detected!",
+                Duration = 10,
+                Image = 4483362458,
+            })
+
+            print(error)
+        end
+    end,
+})
+
+local movesection2 = MoveTab:CreateSection("Lost Children:") --// CHILDREN
+
+local function kid1_loc()
+    local kid_1_found = false
+    if workspace.Characters:FindFirstChild("Lost Child") then
+            
+        --local distance1kid = (workspace.Characters["Lost Child"].Head.CFrame.Position - workspace.Map.Campground.Scrapper:GetChildren()[8].Position).Magnitude
+
+        HRP.CFrame = CFrame.new(workspace.Characters["Lost Child"].Head.CFrame.Position + Vector3.new(0,4,0))
+
+    else
+
+        for _, v in pairs(missing_kids_folder_loc) do
+
+            if _ == "DinoKid" then
+                HRP.CFrame = CFrame.new(v) * CFrame.new(0,-14,0)
+            end
+
+        end
+    end
+end
+
+local Kid1Button = MoveTab:CreateButton({
+    Name = "Dino Kid",
+    Callback = function()
+        local success, error = pcall(kid1_loc)
+
+        if not success then
+            Rayfield:Notify({
+                Title = "Notification",
+                Content = "Child not located",
+                Duration = 10,
+                Image = 4483362458,
+            })
+
+            print(error)
+        end
+    end,
+})
+
+local function kid2_loc()
+    local kid_2_found = false
+    if workspace.Characters:FindFirstChild("Lost Child2") then
+            
+        --local distance1kid = (workspace.Characters["Lost Child2"].Head.CFrame.Position - workspace.Map.Campground.Scrapper:GetChildren()[8].Position).Magnitude
+
+        HRP.CFrame = CFrame.new(workspace.Characters["Lost Child2"].Head.CFrame.Position + Vector3.new(0,4,0))
+
+    else
+
+        for _, v in pairs(missing_kids_folder_loc) do
+
+            if _ == "SquidKid" then
+                HRP.CFrame = CFrame.new(v) * CFrame.new(0,-14,0)
+            end
+
+        end
+    end
+end
+
+local Kid2Button = MoveTab:CreateButton({
+    Name = "Squid Kid",
+    Callback = function()
+        local success, error = pcall(kid2_loc)
+
+        if not success then
+            Rayfield:Notify({
+                Title = "Notification",
+                Content = "Child not located, explore the map more",
+                Duration = 10,
+                Image = 4483362458,
+            })
+
+            print(error)
+        end
+    end,
+})
+
+local function kid3_loc()
+    local kid_3_found = false
+    if workspace.Characters:FindFirstChild("Lost Child3") then
+            
+        --local distance1kid = (workspace.Characters["Lost Child3"].Head.CFrame.Position - workspace.Map.Campground.Scrapper:GetChildren()[8].Position).Magnitude
+        HRP.CFrame = CFrame.new(workspace.Characters["Lost Child3"].Head.CFrame.Position + Vector3.new(0,4,0))
+
+    else
+
+        for _, v in pairs(missing_kids_folder_loc) do
+
+            if _ == "KrakenKid" then
+                HRP.CFrame = CFrame.new(v) * CFrame.new(0,-16,0)
+            end
+
+        end
+    end
+end
+
+local Kid3Button = MoveTab:CreateButton({
+    Name = "Kraken Kid",
+    Callback = function()
+        local success, error = pcall(kid3_loc)
+
+        if not success then
+            Rayfield:Notify({
+                Title = "Notification",
+                Content = "Child not located, explore the map more",
+                Duration = 10,
+                Image = 4483362458,
+            })
+        end 
+    end,
+})
+
+local function kid4_loc()
+    local kid_4_found = false
+    if workspace.Characters:FindFirstChild("Lost Child4") then
+            
+        --local distance1kid = (workspace.Characters["Lost Child4"].Head.CFrame.Position - workspace.Map.Campground.Scrapper:GetChildren()[8].Position).Magnitude
+        HRP.CFrame = CFrame.new(workspace.Characters["Lost Child4"].Head.CFrame.Position + Vector3.new(0,4,0))
+
+    else
+
+        for _, v in pairs(missing_kids_folder_loc) do
+
+            if _ == "KoalaKid" then
+                HRP.CFrame = CFrame.new(v) * CFrame.new(0,-15,0)
+            end
+
+        end
+    end
+end
+
+local Kid4Button = MoveTab:CreateButton({
+    Name = "Koala Kid",
+    Callback = function()
+        local success, error = pcall(kid4_loc)
+
+        if not success then
+            Rayfield:Notify({
+                Title = "Notification",
+                Content = "Child not located, explore the map more",
+                Duration = 10,
+                Image = 4483362458,
+            })
+        end    
+
+    end,
+})
+
+--// Bring Items Tab create
+local selectbringsection = BringTab:CreateSection("Choose Location:")
+
+local bring_to_loc_table = {"Player", "Scrapper", "Fire"}
+local bring_index
+local locationDropdown = BringTab:CreateDropdown({
+    Name = "Bring to:",
+    Options = bring_to_loc_table,
+    CurrentOption = Options,
+    MultipleOptions = false,
+    Flag = "Dropdown1", -- A flag is the identifier for the configuration file; make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+    Callback = function(Options)
+        
+        bring_index = Options[1]
+
+    end,
+})
+
+local fuel_100_Button = BringTab:CreateButton({
+    Name = "Bring 100 Fuel",
+    Callback = function()
+        if bring_index == "Player" then
+            for _, fuel_item in pairs(workspace.Items:GetChildren()) do
+                for i=1, 101, 1 do
+                    if fuel_item.Name == "Coal" or fuel_item.Name == "Fuel Canister" or fuel_item.Name == "Oil Barrel" or fuel_item.Name == "Biofuel" then
+                        local args = {
+	                        fuel_item
+                        }
+                        game:GetService("ReplicatedStorage").RemoteEvents.RequestStartDraggingItem:FireServer(unpack(args))
+
+                        local args = {
+	                        fuel_item
+                        }
+                        game:GetService("ReplicatedStorage").RemoteEvents.StopDraggingItem:FireServer(unpack(args))
+
+                        fuel_item:PivotTo(my_head.CFrame * CFrame.new(0, 10, 0))
+                    end
+                    
+                end
+            end
+            task.wait()
+
+        elseif bring_index == "Scrapper" then
+            for _, fuel_item in pairs(workspace.Items:GetChildren()) do
+                for i=1, 101, 1 do
+                    if fuel_item.Name == "Coal" or fuel_item.Name == "Fuel Canister" or fuel_item.Name == "Oil Barrel" or fuel_item.Name == "Biofuel" then
+                        local args = {
+	                        fuel_item
+                        }
+                        game:GetService("ReplicatedStorage").RemoteEvents.RequestStartDraggingItem:FireServer(unpack(args))
+
+                        local args = {
+	                        fuel_item
+                        }
+                        game:GetService("ReplicatedStorage").RemoteEvents.StopDraggingItem:FireServer(unpack(args))
+
+                        fuel_item:PivotTo(workbench_loc.CFrame * CFrame.new(0, 20, 0))
+                    end
+                    
+                end
+            end
+            task.wait()
+        
+        elseif bring_index == "Fire" then
+            for _, fuel_item in pairs(workspace.Items:GetChildren()) do
+                for i=1, 101, 1 do
+                    if fuel_item.Name == "Coal" or fuel_item.Name == "Fuel Canister" or fuel_item.Name == "Oil Barrel" or fuel_item.Name == "Biofuel" then
+                        local args = {
+	                        fuel_item
+                        }
+                        game:GetService("ReplicatedStorage").RemoteEvents.RequestStartDraggingItem:FireServer(unpack(args))
+
+                        local args = {
+	                        fuel_item
+                        }
+                        game:GetService("ReplicatedStorage").RemoteEvents.StopDraggingItem:FireServer(unpack(args))
+
+                        fuel_item:PivotTo(FIREZONE.CFrame * CFrame.new(0, 20, 0))
+                    end
+                end
+            end
+            task.wait()
+        end
+    end,
+})
+
+local allLogsButton = BringTab:CreateButton({   --// CRASH AREA BELOW
+    Name = "Bring All Logs",
+    Callback = function()
+        if bring_index == "Player" then
+            for _, fuel_item in pairs(workspace.Items:GetChildren()) do
+                for i=1, 101, 1 do
+                    if fuel_item.Name == "Log" or fuel_item.Name == "Chair" then
+                        local args = {
+	                        fuel_item
+                        }
+                        game:GetService("ReplicatedStorage").RemoteEvents.RequestStartDraggingItem:FireServer(unpack(args))
+
+                        local args = {
+	                        fuel_item
+                        }
+                        game:GetService("ReplicatedStorage").RemoteEvents.StopDraggingItem:FireServer(unpack(args))
+
+                        fuel_item:PivotTo(my_head.CFrame * CFrame.new(0, 10, 0))
+                    end
+                    
+                end
+            end
+            task.wait()
+        elseif bring_index == "Scrapper" then
+            for _, logg in pairs(workspace.Items:GetChildren()) do
+
+                if logg.Name == "Log" or logg.Name == "Chair" then
+                    local args = {
+                        logg
+                    }
+                    game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("RequestStartDraggingItem"):FireServer(unpack(args))
+
+                    local args = {
+                        logg
+                    }
+                    game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("StopDraggingItem"):FireServer(unpack(args))
+
+                    logg:PivotTo(workbench_loc.CFrame * CFrame.new(0, 20, 0))
+                end 
+            end
+            task.wait()
+        elseif bring_index == "Fire" then
+            for _, logg in pairs(workspace.Items:GetChildren()) do
+
+                if logg.Name == "Log" or logg.Name == "Chair" then
+                    local args = {
+                        logg
+                    }
+                    game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("RequestStartDraggingItem"):FireServer(unpack(args))
+
+                    local args = {
+                        logg
+                    }
+                    game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("StopDraggingItem"):FireServer(unpack(args))
+
+                    logg:PivotTo(FIREZONE.CFrame * CFrame.new(0, 20, 0))
+                end 
+            end
+            task.wait()
+        end
+    end,
+})
+
+local allGearsButton = BringTab:CreateButton({
+    Name = "Bring All Scrap",
+    Callback = function()
+        if bring_index == "Player" then
+            for _, gear_item in pairs(workspace.Items:GetChildren()) do
+
+                if gear_item.Name == "Broken Fan" or gear_item.Name == "Broken Microwave" or gear_item.Name == "Old Car Engine" or gear_item.Name == "Old Radio" or gear_item.Name == "Tyre" or gear_item.Name == "Sheet Metal" or gear_item.Name == "Washing Machine" then
+                    local args = {
+                        gear_item
+                    }
+                    game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("RequestStartDraggingItem"):FireServer(unpack(args))
+
+                    local args = {
+                        gear_item
+                    }
+                    game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("StopDraggingItem"):FireServer(unpack(args))
+
+                    gear_item:PivotTo(my_head.CFrame * CFrame.new(0, 10, 0))
+                end   
+            end
+            task.wait()
+
+        elseif bring_index == "Scrapper" then
+            for _, gear_item in pairs(workspace.Items:GetChildren()) do
+
+                if gear_item.Name == "Broken Fan" or gear_item.Name == "Broken Microwave" or gear_item.Name == "Old Car Engine" or gear_item.Name == "Old Radio" or gear_item.Name == "Sheet Metal" or gear_item.Name == "Washing Machine" then
+                    local args = {
+                        gear_item
+                    }
+                    game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("RequestStartDraggingItem"):FireServer(unpack(args))
+
+                    local args = {
+                        gear_item
+                    }
+                    game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("StopDraggingItem"):FireServer(unpack(args))
+
+                    gear_item:PivotTo(workbench_loc.CFrame * CFrame.new(0, 20, 0))
+                end 
+            end
+            task.wait()
+        elseif bring_index == "Fire" then
+            for _, gear_item in pairs(workspace.Items:GetChildren()) do
+
+                if gear_item.Name == "Broken Fan" or gear_item.Name == "Broken Microwave" or gear_item.Name == "Old Car Engine" or gear_item.Name == "Old Radio" or gear_item.Name == "Sheet Metal" or gear_item.Name == "Washing Machine" then
+                    local args = {
+                        gear_item
+                    }
+                    game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("RequestStartDraggingItem"):FireServer(unpack(args))
+
+                    local args = {
+                        gear_item
+                    }
+                    game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("StopDraggingItem"):FireServer(unpack(args))
+
+                    gear_item:PivotTo(FIREZONE.CFrame * CFrame.new(0, 20, 0))
+                end  
+            end
+            task.wait()
+        end
+    end,
+})
+
+local mainsectionheal = BringTab:CreateSection("Healing:")
+
+local healButton = BringTab:CreateButton({
+    Name = "Bring ALL Meds",
+    Callback = function()
+        if bring_index == "Player" then
+            for _, med_item in pairs(workspace.Items:GetChildren()) do
+
+                if med_item.Name == "Bandage" or med_item.Name == "MedKit" then
+                    local args = {
+                        med_item
+                    }
+                    game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("RequestStartDraggingItem"):FireServer(unpack(args))
+
+                    local args = {
+                        med_item
+                    }
+                    game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("StopDraggingItem"):FireServer(unpack(args))
+
+                    med_item:PivotTo(my_head.CFrame * CFrame.new(0, 10, 0))
+                end   
+            end
+            task.wait()
+
+        elseif bring_index == "Scrapper" then
+            for _, med_item in pairs(workspace.Items:GetChildren()) do
+
+                if med_item.Name == "Bandage" or med_item.Name == "MedKit" then
+                    local args = {
+                        med_item
+                    }
+                    game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("RequestStartDraggingItem"):FireServer(unpack(args))
+
+                    local args = {
+                        med_item
+                    }
+                    game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("StopDraggingItem"):FireServer(unpack(args))
+
+                    med_item:PivotTo(workbench_loc.CFrame * CFrame.new(0, 10, 0))
+                end   
+            end
+            task.wait()
+        elseif bring_index == "Fire" then
+            for _, med_item in pairs(workspace.Items:GetChildren()) do
+
+                if med_item.Name == "Bandage" or med_item.Name == "MedKit" then
+                    local args = {
+                        med_item
+                    }
+                    game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("RequestStartDraggingItem"):FireServer(unpack(args))
+
+                    local args = {
+                        med_item
+                    }
+                    game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("StopDraggingItem"):FireServer(unpack(args))
+
+                    med_item:PivotTo(FIREZONE.CFrame * CFrame.new(0, 10, 0))
+                end   
+            end
+            task.wait()
+        end
+    end,
+})
+
+local mainsection2 = BringTab:CreateSection("Cultist Gems:")
+
+local CGButton = BringTab:CreateButton({
+    Name = "Bring All Cultist Gems to Workbench",
+    Callback = function() 
+    
+        for _, c_gem in pairs(workspace.Items:GetChildren()) do
+
+            if c_gem:IsA("Model") and string.find(c_gem.Name, "Cultist Gem") then
+
+                local args = {
+	                c_gem
+                }
+                game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("RequestStartDraggingItem"):FireServer(unpack(args))
+
+                local args = {
+	                c_gem
+                }
+                game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("StopDraggingItem"):FireServer(unpack(args))
+
+                c_gem:PivotTo(workbench_loc.CFrame * CFrame.new(0, 5, -2))
+
+                task.wait(0.255)
+
+            end
+
+        end
+    
+    end,
+})
+
+local c_gemToggle = BringTab:CreateToggle({
+    Name = "[Auto] Bring Cultist Gems",
+    CurrentValue = false,
+    Flag = "cgemToggle1", -- A flag is the identifier for the configuration file; make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+    Callback = function(Value)
+        auto_cgem_flag = Value
+        if auto_cgem_flag then
+            Rayfield:Notify({
+                Title = "Notification",
+                Content = "[Auto] Bring Cultist Gems enabled",
+                Duration = 6.5,
+                Image = 4483362458,
+            })
+        end
+
+
+        while auto_cgem_flag do
+
+            for _, c_gem in pairs(workspace.Items:GetChildren()) do
+
+                if c_gem:IsA("Model") and string.find(c_gem.Name, "Cultist Gem") then
+
+                    local args = {
+	                    c_gem
+                    }
+                    game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("RequestStartDraggingItem"):FireServer(unpack(args))
+
+                    local args = {
+	                    c_gem
+                    }
+                    game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("StopDraggingItem"):FireServer(unpack(args))
+
+                    c_gem:PivotTo(workbench_loc.CFrame * CFrame.new(0, 5, -2))
+                    task.wait()
+                    task.wait(0.255)
+                
+                end
+
+            end
+            task.wait(2.011)
+
+        end
+
+
+    end,
+})
+
+local Label = BringTab:CreateLabel("Produce Cultist Gems automatically to the Workbench")
+local Label = BringTab:CreateLabel("every 2 seconds")
+
+local mainsection3 = BringTab:CreateSection("Gem of the Forest Fragments:")
+
+local FFButton = BringTab:CreateButton({
+    Name = "Bring All Forest Fragments to Workbench",
+    Callback = function() 
+    
+        for _, FF_gem in pairs(workspace.Items:GetChildren()) do
+
+            if FF_gem:IsA("Model") and string.find(FF_gem.Name, "Gem of the Forest Fragment") then
+
+                local args = {
+	                FF_gem
+                }
+                game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("RequestStartDraggingItem"):FireServer(unpack(args))
+
+                local args = {
+	                FF_gem
+                }
+                game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("StopDraggingItem"):FireServer(unpack(args))
+
+                FF_gem:PivotTo(workbench_loc.CFrame * CFrame.new(0, 6, -2))
+
+                task.wait(0.2)
+
+            end
+
+        end
+    
+    end,
+})
+
+local mainsectionfood = BringTab:CreateSection("Food:")
+
+local meatsncakeButton = BringTab:CreateButton({
+    Name = "Bring Meats & Cake",
+    Callback = function()
+        if bring_index == "Player" then
+            for _, food_item in pairs(workspace.Items:GetChildren()) do
+
+                if food_item.Name == "Steak" or food_item.Name == "Morsel" or food_item.Name == "Cake" then
+                    local args = {
+                        food_item
+                    }
+                    game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("RequestStartDraggingItem"):FireServer(unpack(args))
+
+                    local args = {
+                        food_item
+                    }
+                    game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("StopDraggingItem"):FireServer(unpack(args))
+
+                    food_item:PivotTo(my_head.CFrame * CFrame.new(0, 10, 0))
+                end   
+            end
+            task.wait()
+
+        elseif bring_index == "Scrapper" then
+            for _, food_item in pairs(workspace.Items:GetChildren()) do
+
+                if food_item.Name == "Steak" or food_item.Name == "Morsel" or food_item.Name == "Cake" then
+                    local args = {
+                        food_item
+                    }
+                    game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("RequestStartDraggingItem"):FireServer(unpack(args))
+
+                    local args = {
+                        food_item
+                    }
+                    game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("StopDraggingItem"):FireServer(unpack(args))
+
+                    food_item:PivotTo(workbench_loc.CFrame * CFrame.new(0, 10, 0))
+                end   
+            end
+            task.wait()
+        elseif bring_index == "Fire" then
+            for _, food_item in pairs(workspace.Items:GetChildren()) do
+
+                if food_item.Name == "Steak" or food_item.Name == "Morsel" or food_item.Name == "Cake" then
+                    local args = {
+                        food_item
+                    }
+                    game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("RequestStartDraggingItem"):FireServer(unpack(args))
+
+                    local args = {
+                        food_item
+                    }
+                    game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("StopDraggingItem"):FireServer(unpack(args))
+
+                    food_item:PivotTo(FIREZONE.CFrame * CFrame.new(0, 10, 0))
+                end   
+            end
+            task.wait()
+        end
+    end,
+})
+
+--// Create Skulls auto Tab
+
+local Section1 = SkullTab:CreateSection("Produce Crystal Skull Keys:")
+
+local SkullPodiumToggle = SkullTab:CreateToggle({
+    Name = "[Auto] Skulls > Podium",
+    CurrentValue = false,
+    Flag = "SkullToggle1", -- A flag is the identifier for the configuration file; make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+    Callback = function(Value)
+        skull_podium_flag = Value
+        if skull_podium_flag then
+            Rayfield:Notify({
+                Title = "Notification",
+                Content = "Skull > Podium enabled",
+                Duration = 6.5,
+                Image = 4483362458,
+            })
+        end
+
+        local index = 1
+
+        while skull_podium_flag do
+            --print("flag on")
+            for _, skull in pairs(workspace.Items:GetChildren()) do
+
+                if skull:IsA("Model") and string.find(skull.Name, "Crystal Skull Key") then
+
+                    if index == 1 then
+
+                        --print("index 1")
+                        index = index + 1
+
+                        local args = {
+                            skull
+                        }
+                        game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("RequestStartDraggingItem"):FireServer(unpack(args))
+                        task.wait()
+
+                        local args = {
+                            skull
+                        }
+                        game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("RequestStartDraggingItem"):FireServer(unpack(args))
+                    
+                        skull:PivotTo(jungle_key1.CFrame * CFrame.new(0,3,0))
+                        task.wait(1)
+                    
+                    elseif index == 2 then
+                        --print("index 2")
+                        index = index + 1
+
+                        local args = {
+                            skull
+                        }
+                        game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("RequestStartDraggingItem"):FireServer(unpack(args))
+                        task.wait()
+
+                        local args = {
+                            skull
+                        }
+                        game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("RequestStartDraggingItem"):FireServer(unpack(args))
+                    
+                        skull:PivotTo(jungle_key2.CFrame * CFrame.new(0,3,0))
+                        task.wait(1)
+                    elseif index == 3 then
+                        --print("index 3")
+                        index = index + 1
+
+                        local args = {
+                            skull
+                        }
+                        game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("RequestStartDraggingItem"):FireServer(unpack(args))
+                        task.wait()
+
+                        local args = {
+                            skull
+                        }
+                        game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("RequestStartDraggingItem"):FireServer(unpack(args))
+                    
+                        skull:PivotTo(jungle_key3.CFrame * CFrame.new(0,3,0))
+                        task.wait(1)
+                    elseif index == 4 then
+                        --print("index 4")
+                        index = index + 1
+
+                        local args = {
+                            skull
+                        }
+                        game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("RequestStartDraggingItem"):FireServer(unpack(args))
+                        task.wait()
+
+                        local args = {
+                            skull
+                        }
+                        game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("RequestStartDraggingItem"):FireServer(unpack(args))
+                    
+                        skull:PivotTo(jungle_key4.CFrame * CFrame.new(0,3,0))
+                        task.wait(1)
+                    else
+                        break
+                    end
+
+                end
+
+            end
+            task.wait(310)
+            index = 1
+
+        end
+
+    end,
+})
+local Label = SkullTab:CreateLabel("Produce 4 Crystal Skull Keys automatically to the Jungle Temple")
+local Label = SkullTab:CreateLabel("every 5:00 minutes - Max Fire Recommended")
+local Paragraph = SkullTab:CreateParagraph({Title = "Important Notice", Content = "You must have atleast 4 skulls on the ground somewhere NOT in your sack. If Crystal skulls do not produce, you will need to TURN OFF auto skull > podium and clear the podiums manually to refresh the podiums. Then you may resume using auto skull > podium."
+
+
+
+})
+
+
+end
