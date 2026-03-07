@@ -4,7 +4,7 @@ if game.PlaceId == place_id then
 
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
-local _Version = "Cyan-99 v1-beta"
+local _Version = "Cyan-99 v1.0"
 
 local Window = Rayfield:CreateWindow({
    Name = _Version,
@@ -53,12 +53,15 @@ local my_head = game.Players.LocalPlayer.Character.Head
 local MyUserID = game.Players.LocalPlayer.UserId
 
 local skull_podium_flag = false
+local run_toggle_flag = false
 local run_speed_flag = false
+local jump_toggle_flag = false
 local jump_power_flag = false
 local auto_cgem_flag = false
 local health_flag = false
 local kill_flag = false
 local always_day_flag = false
+local insta_chest_flag = false
 
 local jungle_key1 = workspace.Map.Landmarks["Jungle Temple"].Functional.Podiums:GetChildren()[1]["Jungle Key"].Main
 local jungle_key2 = workspace.Map.Landmarks["Jungle Temple"].Functional.Podiums:GetChildren()[2]["Jungle Key"].Main
@@ -98,11 +101,9 @@ end
 Rayfield:Notify({
     Title = "Infrastructure:",
     Content = "Querying models and detecting NPCs, please wait...",
-    Duration = 12,
+    Duration = 10,
     Image = 4483362458,
 }) 
-
--- pcall(queryBears)
 
 ----------------------------------------
 Rayfield:Notify({
@@ -115,12 +116,15 @@ Rayfield:Notify({
 local MainTab = Window:CreateTab("Main", "blend") -- Title, Image
 local MoveTab = Window:CreateTab("Teleport", "move") -- Title, Image
 local BringTab = Window:CreateTab("Bring", "briefcase") -- Title, Image
+local ChestTab = Window:CreateTab("Chests", "package") -- Title, Image
 local SkullTab = Window:CreateTab("Skulls", "skull") -- Title, Image
 
 
 --// create main tab 
 
 local mainsection1 = MainTab:CreateSection("Player:")
+
+local speed_index
 
 local SpeedSlider = MainTab:CreateSlider({
         Name = "Speed",
@@ -130,12 +134,55 @@ local SpeedSlider = MainTab:CreateSlider({
         CurrentValue = 16,
         Flag = "SpeedSlider1", -- A flag is the identifier for the configuration file; make sure every element has a different flag if you're using configuration saving to ensure no overlaps
         Callback = function(Value)
-            while true do
-                task.wait()
-                charr.Humanoid.WalkSpeed = Value
-            end
+
+            --charr.Humanoid.WalkSpeed = Value
+            speed_index = Value
+
         end,
-    })
+})
+
+local runToggle = MainTab:CreateToggle({
+    Name = "Enable Speed",
+    CurrentValue = false,
+    Flag = "runToggle1", -- A flag is the identifier for the configuration file; make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+    Callback = function(Value)
+        run_toggle_flag = Value
+
+        if run_toggle_flag then
+
+            Rayfield:Notify({
+                Title = "Notification",
+                Content = "Run Speed enabled",
+                Duration = 6,
+                Image = 4483362458,
+            })
+
+        end
+
+        while run_toggle_flag do
+
+            charr.Humanoid.WalkSpeed = speed_index
+            task.wait(0.01)
+
+            if run_toggle_flag == false then
+
+                charr.Humanoid.WalkSpeed = 16
+
+                Rayfield:Notify({
+                    Title = "Notification",
+                    Content = "Run Speed disabled",
+                    Duration = 6,
+                    Image = 4483362458,
+                })
+
+            end
+
+        end
+
+    end,
+})
+
+local jump_index
 
 local JumpSlider = MainTab:CreateSlider({
     Name = "Jump",
@@ -146,8 +193,49 @@ local JumpSlider = MainTab:CreateSlider({
     Flag = "JumpSlider1", -- A flag is the identifier for the configuration file; make sure every element has a different flag if you're using configuration saving to ensure no overlaps
     Callback = function(Value)
     
-        charr.Humanoid.JumpHeight = Value
-        charr.Humanoid.JumpPower = Value
+        jump_index = Value
+
+    end,
+})
+
+local jumpToggle = MainTab:CreateToggle({
+    Name = "Enable Jump",
+    CurrentValue = false,
+    Flag = "jumpToggle1", -- A flag is the identifier for the configuration file; make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+    Callback = function(Value)
+        jump_toggle_flag = Value
+
+        if jump_toggle_flag then
+
+            Rayfield:Notify({
+                Title = "Notification",
+                Content = "Jump enabled",
+                Duration = 6,
+                Image = 4483362458,
+            })
+
+        end
+
+        while jump_toggle_flag do
+
+            charr.Humanoid.JumpHeight = jump_index
+            charr.Humanoid.JumpPower = jump_index
+            task.wait(0.01)
+
+            if jump_toggle_flag == false then
+
+                charr.Humanoid.JumpHeight = 6.5
+
+                Rayfield:Notify({
+                    Title = "Notification",
+                    Content = "Jump disabled",
+                    Duration = 6,
+                    Image = 4483362458,
+                })
+
+            end
+
+        end
 
     end,
 })
@@ -416,33 +504,49 @@ local DaylightToggle = MainTab:CreateToggle({
 
 })
 
-local instaChestButton = MainTab:CreateButton({
+local instaChestButton = MainTab:CreateToggle({
     Name = "Instant-Open Chests",
-    Callback = function()
-        for _, Chest in pairs(workspace.Items:GetChildren()) do
+    CurrentValue = false,
+    Callback = function(Value)
 
-            if Chest.Name == "Item Chest" or Chest.Name == "Item Chest2" or Chest.Name == "Item Chest3" or Chest.Name == "Item Chest4" or Chest.Name == "Item Chest5" or Chest.Name == "Item Chest6" or Chest.Name == "Jungle Chest1" or Chest.Name == "Jungle Chest2" or Chest.Name == "Stronghold Diamond Chest" or Chest.Name == "Stone Chest1" or Chest.Name == "Stone Chest2" or Chest.Name == "Mossy Chest" then
-                
-                for _, m in pairs(Chest:GetChildren()) do
+        insta_chest_flag = Value
+        if insta_chest_flag then
 
-                    if m:IsA("Part") and m.Name == "Main" then
+            Rayfield:Notify({
+                Title = "Notification",
+                Content = "Instant-Open Chests enabled",
+                Duration = 10,
+                Image = 4483362458,
+            })
 
-                        if m:FindFirstChild("ProximityAttachment") then
-                            local inner_prox = m.ProximityAttachment.ProximityInteraction
-                            inner_prox.HoldDuration = 0
+        end
+
+        while insta_chest_flag do
+            for _, Chest in pairs(workspace.Items:GetChildren()) do
+
+                if Chest.Name == "Item Chest" or Chest.Name == "Item Chest2" or Chest.Name == "Item Chest3" or Chest.Name == "Item Chest4" or Chest.Name == "Item Chest5" or Chest.Name == "Item Chest6" or Chest.Name == "Jungle Chest1" or Chest.Name == "Jungle Chest2" or Chest.Name == "Stronghold Diamond Chest" or Chest.Name == "Stone Chest1" or Chest.Name == "Stone Chest2" or Chest.Name == "Mossy Chest" then
+
+                    for _, m in pairs(Chest:GetChildren()) do
+
+                        if m:IsA("Part") and m.Name == "Main" then
+
+                            if m:FindFirstChild("ProximityAttachment") then
+                                local inner_prox = m.ProximityAttachment.ProximityInteraction
+                                inner_prox.HoldDuration = 0
+                            else
+                                continue
+                            end
                         else
                             continue
                         end
-                    else
-                        continue
+
                     end
 
                 end
 
             end
-
+            task.wait(2.899)
         end
-        task.wait()
     end,
 })
 
@@ -1230,6 +1334,477 @@ local meatsncakeButton = BringTab:CreateButton({
             end
             task.wait()
         end
+    end,
+})
+
+--// Chest Tab create
+
+local Section1chests = ChestTab:CreateSection("Chest Type / Location:")
+
+local function returnItemChest1()
+    local chest1s = {}
+    for _, Chest in pairs(workspace.Items:GetChildren()) do
+
+        if Chest.Name == "Item Chest" then
+
+            for _, m in pairs(Chest:GetChildren()) do
+
+                if m:IsA("Part") and m.Name == "Main" then
+                    local chest1loc = m.CFrame.Position
+                    print("found ch1")
+                    if not table.find(chest1s, tostring(chest1loc)) then
+                        table.insert(chest1s, tostring(chest1loc))
+                    end
+                else
+                    continue
+                end
+
+            end
+
+        end
+
+    end
+    return chest1s
+end
+local chest1selected = nil
+local chest1Dropdown = ChestTab:CreateDropdown({
+    Name = "Chest 1 - Common",
+    Options = returnItemChest1(),
+    CurrentOption = Options,
+    MultipleOptions = false,
+    Flag = "Dropdown1", -- A flag is the identifier for the configuration file; make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+    Callback = function(Options)
+
+        chest1selected = Options[1]
+
+
+    end,
+})
+
+local function chest1cframe(split)
+    local split = string.split(chest1selected, ",")
+    return Vector3.new(split[1],split[2],split[3])
+end
+
+local gochest1Button = ChestTab:CreateButton({
+    Name = "[1] Go",
+    Callback = function()
+        
+        HRP.CFrame = CFrame.new(chest1cframe(chest1selected) + Vector3.new(0,5,0))
+    end,
+})
+-- 
+local function returnItemChest2()
+    local chest2s = {}
+    for _, Chest in pairs(workspace.Items:GetChildren()) do
+
+        if Chest.Name == "Item Chest2" then
+
+            for _, m in pairs(Chest:GetChildren()) do
+
+                if m:IsA("Part") and m.Name == "Main" then
+                    local chest2loc = m.CFrame.Position
+                    print("found ch2")
+                    if not table.find(chest2s, tostring(chest2loc)) then
+                        table.insert(chest2s, tostring(chest2loc))
+                    end
+                else
+                    continue
+                end
+
+            end
+
+        end
+
+    end
+    return chest2s
+end
+local chest2selected = nil
+local chest2Dropdown = ChestTab:CreateDropdown({
+    Name = "Chest 2 - Uncommon",
+    Options = returnItemChest2(),
+    CurrentOption = Options,
+    MultipleOptions = false,
+    Flag = "Dropdown2", -- A flag is the identifier for the configuration file; make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+    Callback = function(Options)
+
+        chest2selected = Options[1]
+
+
+    end,
+})
+
+local function chest2cframe(split)
+    local split = string.split(chest2selected, ",")
+    return Vector3.new(split[1],split[2],split[3])
+end
+
+local gochest2Button = ChestTab:CreateButton({
+    Name = "[2] Go",
+    Callback = function()
+        
+        HRP.CFrame = CFrame.new(chest2cframe(chest2selected) + Vector3.new(0,5,0))
+    end,
+})
+-- 
+local function returnItemChest3()
+    local chest3s = {}
+    for _, Chest in pairs(workspace.Items:GetChildren()) do
+
+        if Chest.Name == "Item Chest3" then
+
+            for _, m in pairs(Chest:GetChildren()) do
+
+                if m:IsA("Part") and m.Name == "Main" then
+                    local chest3loc = m.CFrame.Position
+                    print("found ch3")
+                    if not table.find(chest3s, tostring(chest3loc)) then
+                        table.insert(chest3s, tostring(chest3loc))
+                    end
+                else
+                    continue
+                end
+
+            end
+
+        end
+
+    end
+    return chest3s
+end
+local chest3selected = nil
+local chest3Dropdown = ChestTab:CreateDropdown({
+    Name = "Chest 3 - Rare",
+    Options = returnItemChest3(),
+    CurrentOption = Options,
+    MultipleOptions = false,
+    Flag = "Dropdown2", -- A flag is the identifier for the configuration file; make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+    Callback = function(Options)
+
+        chest3selected = Options[1]
+
+
+    end,
+})
+
+local function chest3cframe(split)
+    local split = string.split(chest3selected, ",")
+    return Vector3.new(split[1],split[2],split[3])
+end
+
+local gochest3Button = ChestTab:CreateButton({
+    Name = "[3] Go",
+    Callback = function()
+        
+        HRP.CFrame = CFrame.new(chest3cframe(chest3selected) + Vector3.new(0,5,0))
+    end,
+})
+-- 
+local function returnItemChest4()
+    local chest4s = {}
+    for _, Chest in pairs(workspace.Items:GetChildren()) do
+
+        if Chest.Name == "Item Chest4" then
+
+            for _, m in pairs(Chest:GetChildren()) do
+
+                if m:IsA("Part") and m.Name == "Main" then
+                    local chest4loc = m.CFrame.Position
+                    print("found ch4")
+                    if not table.find(chest4s, tostring(chest4loc)) then
+                        table.insert(chest4s, tostring(chest4loc))
+                    end
+                else
+                    continue
+                end
+
+            end
+
+        end
+
+    end
+    return chest4s
+end
+local chest4selected = nil
+local chest4Dropdown = ChestTab:CreateDropdown({
+    Name = "Chest 4 - Gold I",
+    Options = returnItemChest4(),
+    CurrentOption = Options,
+    MultipleOptions = false,
+    Flag = "Dropdown2", -- A flag is the identifier for the configuration file; make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+    Callback = function(Options)
+
+        chest4selected = Options[1]
+
+
+    end,
+})
+
+local function chest4cframe(split)
+    local split = string.split(chest4selected, ",")
+    return Vector3.new(split[1],split[2],split[3])
+end
+
+local gochest4Button = ChestTab:CreateButton({
+    Name = "[4] Go",
+    Callback = function()
+        
+        HRP.CFrame = CFrame.new(chest4cframe(chest4selected) + Vector3.new(0,5,0))
+    end,
+})
+-- 
+local function returnItemChest5()
+    local chest5s = {}
+    for _, Chest in pairs(workspace.Items:GetChildren()) do
+
+        if Chest.Name == "Item Chest5" then
+
+            for _, m in pairs(Chest:GetChildren()) do
+
+                if m:IsA("Part") and m.Name == "Main" then
+                    local chest5loc = m.CFrame.Position
+                    print("found ch5")
+                    if not table.find(chest5s, tostring(chest5loc)) then
+                        table.insert(chest5s, tostring(chest5loc))
+                    end
+                else
+                    continue
+                end
+
+            end
+
+        end
+
+    end
+    return chest5s
+end
+local chest5selected = nil
+local chest5Dropdown = ChestTab:CreateDropdown({
+    Name = "Chest 5 - Gold II",
+    Options = returnItemChest5(),
+    CurrentOption = Options,
+    MultipleOptions = false,
+    Flag = "Dropdown2", -- A flag is the identifier for the configuration file; make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+    Callback = function(Options)
+
+        chest5selected = Options[1]
+
+
+    end,
+})
+
+local function chest5cframe(split)
+    local split = string.split(chest5selected, ",")
+    return Vector3.new(split[1],split[2],split[3])
+end
+
+local gochest5Button = ChestTab:CreateButton({
+    Name = "[5] Go",
+    Callback = function()
+        
+        HRP.CFrame = CFrame.new(chest5cframe(chest5selected) + Vector3.new(0,5,0))
+    end,
+})
+-- 
+local function returnItemChest6()
+    local chest6s = {}
+    for _, Chest in pairs(workspace.Items:GetChildren()) do
+
+        if Chest.Name == "Item Chest6" then
+
+            for _, m in pairs(Chest:GetChildren()) do
+
+                if m:IsA("Part") and m.Name == "Main" then
+                    local chest6loc = m.CFrame.Position
+                    print("found ch6")
+                    if not table.find(chest6s, tostring(chest6loc)) then
+                        table.insert(chest6s, tostring(chest6loc))
+                    end
+                else
+                    continue
+                end
+
+            end
+
+        end
+
+    end
+    return chest6s
+end
+local chest6selected = nil
+local chest6Dropdown = ChestTab:CreateDropdown({
+    Name = "Chest 6 - RUBY RED",
+    Options = returnItemChest6(),
+    CurrentOption = Options,
+    MultipleOptions = false,
+    Flag = "Dropdown2", -- A flag is the identifier for the configuration file; make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+    Callback = function(Options)
+
+        chest6selected = Options[1]
+
+
+    end,
+})
+
+local function chest6cframe(split)
+    local split = string.split(chest6selected, ",")
+    return Vector3.new(split[1],split[2],split[3])
+end
+
+local gochest6Button = ChestTab:CreateButton({
+    Name = "[6] Go",
+    Callback = function()
+        
+        HRP.CFrame = CFrame.new(chest6cframe(chest6selected) + Vector3.new(0,5,0))
+    end,
+})
+
+
+local bottomchestsDivider = ChestTab:CreateDivider()
+local refreshChestsButton = ChestTab:CreateButton({
+    Name = "Refresh Chests",
+    Callback = function()
+        local chest1s = {}
+        for _, Chest in pairs(workspace.Items:GetChildren()) do
+
+            if Chest.Name == "Item Chest" then
+
+                for _, m in pairs(Chest:GetChildren()) do
+
+                    if m:IsA("Part") and m.Name == "Main" then
+                        local chest1loc = m.CFrame.Position
+                        print("found ch1")
+                        if not table.find(chest1s, tostring(chest1loc)) then
+                            table.insert(chest1s, tostring(chest1loc))
+                        end
+                    else
+                        continue
+                    end
+
+                end
+
+            end
+
+        end
+        local chest2s = {}
+        for _, Chest in pairs(workspace.Items:GetChildren()) do
+
+            if Chest.Name == "Item Chest2" then
+
+                for _, m in pairs(Chest:GetChildren()) do
+
+                    if m:IsA("Part") and m.Name == "Main" then
+                        local chest2loc = m.CFrame.Position
+                        print("found ch2")
+                        if not table.find(chest2s, tostring(chest2loc)) then
+                            table.insert(chest2s, tostring(chest2loc))
+                        end
+                    else
+                        continue
+                    end
+
+                end
+
+            end
+
+        end
+        local chest3s = {}
+        for _, Chest in pairs(workspace.Items:GetChildren()) do
+
+            if Chest.Name == "Item Chest3" then
+
+                for _, m in pairs(Chest:GetChildren()) do
+
+                    if m:IsA("Part") and m.Name == "Main" then
+                        local chest3loc = m.CFrame.Position
+                        print("found ch3")
+                        if not table.find(chest3s, tostring(chest3loc)) then
+                            table.insert(chest3s, tostring(chest3loc))
+                        end
+                    else
+                        continue
+                    end
+
+                end
+
+            end
+
+        end
+        local chest4s = {}
+        for _, Chest in pairs(workspace.Items:GetChildren()) do
+
+            if Chest.Name == "Item Chest4" then
+
+                for _, m in pairs(Chest:GetChildren()) do
+
+                    if m:IsA("Part") and m.Name == "Main" then
+                        local chest4loc = m.CFrame.Position
+                        print("found ch4")
+                        if not table.find(chest4s, tostring(chest4loc)) then
+                            table.insert(chest4s, tostring(chest4loc))
+                        end
+                    else
+                        continue
+                    end
+
+                end
+
+            end
+
+        end
+        local chest5s = {}
+        for _, Chest in pairs(workspace.Items:GetChildren()) do
+
+            if Chest.Name == "Item Chest5" then
+
+                for _, m in pairs(Chest:GetChildren()) do
+
+                    if m:IsA("Part") and m.Name == "Main" then
+                        local chest5loc = m.CFrame.Position
+                        print("found ch5")
+                        if not table.find(chest5s, tostring(chest5loc)) then
+                            table.insert(chest5s, tostring(chest5loc))
+                        end
+                    else
+                        continue
+                    end
+
+                end
+
+            end
+
+        end
+        local chest6s = {}
+        for _, Chest in pairs(workspace.Items:GetChildren()) do
+
+            if Chest.Name == "Item Chest6" then
+
+                for _, m in pairs(Chest:GetChildren()) do
+
+                    if m:IsA("Part") and m.Name == "Main" then
+                        local chest6loc = m.CFrame.Position
+                        print("found ch6")
+                        if not table.find(chest6s, tostring(chest6loc)) then
+                            table.insert(chest6s, tostring(chest6loc))
+                        end
+                    else
+                        continue
+                    end
+
+                end
+
+            end
+
+        end
+        chest1Dropdown:Refresh(chest1s)
+        chest2Dropdown:Refresh(chest2s)
+        chest3Dropdown:Refresh(chest3s)
+        chest4Dropdown:Refresh(chest4s)
+        chest5Dropdown:Refresh(chest5s)
+        chest6Dropdown:Refresh(chest6s)
+
+        task.wait()
+        return chest1s, chest2s, chest3s, chest4s, chest5s, chest6s
     end,
 })
 
