@@ -4,11 +4,11 @@ if game.PlaceId == place_id then
 
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
-local _Version = "Cyan-99 v1.0"
+local _Version = "Cyan-99 v1.01f"
 
 local Window = Rayfield:CreateWindow({
    Name = _Version,
-   Icon = 0, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
+   Icon = "shell", -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
    LoadingTitle = "Cyan Hubs",
    LoadingSubtitle = "by 4NTHOcyan",
    ShowText = "Rayfield", -- for mobile users to unhide Rayfield, change if you'd like
@@ -26,8 +26,8 @@ local Window = Rayfield:CreateWindow({
    },
 
    Discord = {
-      Enabled = false, -- Prompt the user to join your Discord server if their executor supports it
-      Invite = "noinvitelink", -- The Discord invite code, do not include Discord.gg/. E.g. Discord.gg/ ABCD would be ABCD
+      Enabled = true, -- Prompt the user to join your Discord server if their executor supports it
+      Invite = "9vxK5cdGy4", -- The Discord invite code, do not include Discord.gg/. E.g. Discord.gg/ ABCD would be ABCD
       RememberJoins = true -- Set this to false to make them join the Discord every time they load it up
    },
 
@@ -60,13 +60,15 @@ local jump_power_flag = false
 local auto_cgem_flag = false
 local health_flag = false
 local kill_flag = false
+local chop_trees_flag = false
 local always_day_flag = false
 local insta_chest_flag = false
 
-local jungle_key1 = workspace.Map.Landmarks["Jungle Temple"].Functional.Podiums:GetChildren()[1]["Jungle Key"].Main
-local jungle_key2 = workspace.Map.Landmarks["Jungle Temple"].Functional.Podiums:GetChildren()[2]["Jungle Key"].Main
-local jungle_key3 = workspace.Map.Landmarks["Jungle Temple"].Functional.Podiums:GetChildren()[3]["Jungle Key"].Main
-local jungle_key4 = workspace.Map.Landmarks["Jungle Temple"].Functional.Podiums:GetChildren()[4]["Jungle Key"].Main
+--workspace.Map.Landmarks["Jungle Temple"].Functional.Podiums:GetChildren()[4].TouchZone
+local jungle_key1 = workspace.Map.Landmarks["Jungle Temple"].Functional.Podiums:GetChildren()[1].TouchZone
+local jungle_key2 = workspace.Map.Landmarks["Jungle Temple"].Functional.Podiums:GetChildren()[2].TouchZone
+local jungle_key3 = workspace.Map.Landmarks["Jungle Temple"].Functional.Podiums:GetChildren()[3].TouchZone
+local jungle_key4 = workspace.Map.Landmarks["Jungle Temple"].Functional.Podiums:GetChildren()[4].TouchZone
 
 local LIGHT = game:GetService("Lighting")
 
@@ -79,6 +81,7 @@ local upg_hut = workspace.Map.Landmarks
 local missing_kids_folder_loc = workspace.Map:WaitForChild("MissingKids"):GetAttributes()
 
 local jung_temp_stair = workspace.Map.Landmarks["Jungle Temple"].Functional.Stairwell.Moving["0"]
+local jung_fight_pit = workspace.Map.Landmarks["Jungle Fight Pit"].Functional.ArenaLootZones:FindFirstChild("LootZone").Zone
 
 local NPC_enemies = workspace.Characters
 
@@ -86,7 +89,7 @@ local damage_hash = "1_"..tostring(MyUserID)
 
 local function queryBears()
     for _, b in ipairs(NPC_enemies:GetChildren()) do
-        if b:IsA("Model") and string.find(b.Name, "Bear") then
+        if b:IsA("Model") and b.Name == "Bear" then
             for _, h in pairs(b:GetChildren()) do
                 if h:IsA("Part") and string.find(h.Name, "HumanoidRootPart") then
                     h.CanQuery = true
@@ -114,10 +117,13 @@ Rayfield:Notify({
 })
 
 local MainTab = Window:CreateTab("Main", "blend") -- Title, Image
-local MoveTab = Window:CreateTab("Teleport", "move") -- Title, Image
 local BringTab = Window:CreateTab("Bring", "briefcase") -- Title, Image
+local MoveTab = Window:CreateTab("Teleport", "move") -- Title, Image
+local TreeTab = Window:CreateTab("Trees", "trees")
 local ChestTab = Window:CreateTab("Chests", "package") -- Title, Image
 local SkullTab = Window:CreateTab("Skulls", "skull") -- Title, Image
+
+local CREDITS = Window:CreateTab("Credits", "users") -- Title, Image
 
 
 --// create main tab 
@@ -524,7 +530,7 @@ local instaChestButton = MainTab:CreateToggle({
         while insta_chest_flag do
             for _, Chest in pairs(workspace.Items:GetChildren()) do
 
-                if Chest.Name == "Item Chest" or Chest.Name == "Item Chest2" or Chest.Name == "Item Chest3" or Chest.Name == "Item Chest4" or Chest.Name == "Item Chest5" or Chest.Name == "Item Chest6" or Chest.Name == "Jungle Chest1" or Chest.Name == "Jungle Chest2" or Chest.Name == "Stronghold Diamond Chest" or Chest.Name == "Stone Chest1" or Chest.Name == "Stone Chest2" or Chest.Name == "Mossy Chest" then
+                if Chest.Name == "Item Chest" or Chest.Name == "Item Chest2" or Chest.Name == "Item Chest3" or Chest.Name == "Item Chest4" or Chest.Name == "Item Chest5" or Chest.Name == "Item Chest6" or Chest.Name == "Jungle Chest1" or Chest.Name == "Jungle Chest2" or Chest.Name == "Stronghold Diamond Chest" or Chest.Name == "Stone Chest1" or Chest.Name == "Stone Chest2" or Chest.Name == "Mossy Chest" or Chest.Name == "Obsidiron Chest" then
 
                     for _, m in pairs(Chest:GetChildren()) do
 
@@ -580,6 +586,23 @@ local TempleButton = MoveTab:CreateButton({
     end,
 })
 
+local fightpitButton = MoveTab:CreateButton({
+    Name = "Jungle Fight Pit",
+    Callback = function()
+        if workspace.Map.Landmarks:FindFirstChild("Jungle Fight Pit") then
+
+            HRP.CFrame = jung_fight_pit.CFrame * CFrame.new(0,16,0)
+        else
+            Rayfield:Notify({
+                Title = "Notification",
+                Content = "No Fight Pit detected!",
+                Duration = 10,
+                Image = 4483362458,
+            })
+        end
+    end,
+})
+
 local SHButton = MoveTab:CreateButton({
     Name = "Stronghold",
     Callback = function()
@@ -600,7 +623,17 @@ local SHDCButton = MoveTab:CreateButton({
     Name = "Stronghold - Diamond Chest",
     Callback = function()
         if workspace.Items:FindFirstChild("Stronghold Diamond Chest") then
-            HRP.CFrame = workspace.Items["Stronghold Diamond Chest"].Platform.CFrame * CFrame.new(0,6,0)
+            if workspace.Items["Stronghold Diamond Chest"]:FindFirstChild("Platform") then
+                HRP.CFrame = workspace.Items["Stronghold Diamond Chest"].Platform.CFrame * CFrame.new(0,6,0)
+            
+            else
+                Rayfield:Notify({
+                    Title = "Notification",
+                    Content = "No Diamond Chest detected!",
+                    Duration = 10,
+                    Image = 4483362458,
+                })
+            end
         else
             Rayfield:Notify({
                 Title = "Notification",
@@ -649,7 +682,7 @@ local FairyButton = MoveTab:CreateButton({
         if workspace.Map.Landmarks:FindFirstChild("Fairy House") then
             local qFpart = workspace.Map.Landmarks["Fairy House"].Main
             qFpart.CanQuery = true
-            HRP.CFrame = CFrame.new(qFpart.CFrame.Position + Vector3.new(0,8,-10))
+            HRP.CFrame = CFrame.new(qFpart.CFrame.Position + Vector3.new(-10,28,-10))
         else
             Rayfield:Notify({
                 Title = "Notification",
@@ -885,6 +918,107 @@ local Kid4Button = MoveTab:CreateButton({
 
     end,
 })
+
+
+--// Trees tab create
+
+local chopToggle = TreeTab:CreateToggle({
+    Name = "Tree Chop Aura",
+    CurrentValue = false,
+    Flag = "treeToggle1", -- A flag is the identifier for the configuration file; make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+    Callback = function(Value)
+        chop_trees_flag = Value
+
+        if chop_trees_flag then
+            Rayfield:Notify({
+                Title = "Notification",
+                Content = "Tree Chop Aura enabled",
+                Duration = 8,
+                Image = 4483362458,
+            })
+        end
+
+        while chop_trees_flag do
+            local includeparams = OverlapParams.new()
+            local excludeparams = OverlapParams.new()
+            includeparams.FilterType = Enum.RaycastFilterType.Include
+            includeparams.FilterDescendantsInstances = {workspace.Map.Foliage}
+            excludeparams.FilterType = Enum.RaycastFilterType.Exclude
+            excludeparams.FilterDescendantsInstances = {NPC_enemies}
+            local worldrootradiustrees = workspace:GetPartBoundsInRadius(HRP.Position, 180, includeparams, excludeparams)
+
+            for _, foliage in pairs(worldrootradiustrees) do
+                --print(foliage)
+                if foliage.Name == "Trunk" then
+                    --print(foliage.Name)
+                    
+                    if not foliage.Parent then break end
+
+                        for _, tool in pairs(game:GetService("Players").LocalPlayer.Inventory:GetChildren()) do
+
+                            if string.find(tool.Name, "Old Axe") then
+
+                                local args = {
+                                    foliage.Parent,
+                                    game.Players.LocalPlayer.Inventory:WaitForChild("Old Axe"),
+                                    damage_hash,
+                                    CFrame.new(foliage.Parent:GetPivot().Position + Vector3.new(-5,-3,-6))
+                                }
+                                game.ReplicatedStorage.RemoteEvents.ToolDamageObject:InvokeServer(unpack(args))
+
+                            elseif string.find(tool.Name, "Good Axe") then
+
+
+                                local args = {
+                                    foliage.Parent,
+                                    game.Players.LocalPlayer.Inventory:WaitForChild("Good Axe"),
+                                    damage_hash,
+                                    CFrame.new(foliage.Parent:GetPivot().Position + Vector3.new(-5,-3,-6))
+                                }
+                                game.ReplicatedStorage.RemoteEvents.ToolDamageObject:InvokeServer(unpack(args))    
+
+                            elseif string.find(tool.Name, "Strong Axe") then
+
+
+                                local args = {
+                                    foliage.Parent,
+                                    game.Players.LocalPlayer.Inventory:WaitForChild("Strong Axe"),
+                                    damage_hash,
+                                    CFrame.new(foliage.Parent:GetPivot().Position + Vector3.new(-5,-3,-6))
+                                }
+                                game.ReplicatedStorage.RemoteEvents.ToolDamageObject:InvokeServer(unpack(args))
+
+                            elseif string.find(tool.Name, "Chainsaw") then
+
+
+                                local args = {
+                                    foliage.Parent,
+                                    game.Players.LocalPlayer.Inventory:WaitForChild("Chainsaw"),
+                                    damage_hash,
+                                    CFrame.new(foliage.Parent:GetPivot().Position + Vector3.new(-5,-3,-6))
+                                }
+                                game.ReplicatedStorage.RemoteEvents.ToolDamageObject:InvokeServer(unpack(args))
+                            else
+                                continue
+                            end
+                        end
+                end
+
+                
+
+            end
+            task.wait()
+
+        end
+
+    end,
+})
+local cuttingLabel = TreeTab:CreateLabel("Hold Strong Axe / Chainsaw for quicker results", "axe")
+
+local saplingsection = TreeTab:CreateSection("Plant Saplings:")
+
+local WIPLabel = TreeTab:CreateLabel("work in progess, tree chop aura IS working 3-09-26", 0)
+
 
 --// Bring Items Tab create
 local selectbringsection = BringTab:CreateSection("Choose Location:")
@@ -1833,13 +1967,10 @@ local SkullPodiumToggle = SkullTab:CreateToggle({
             --print("flag on")
             for _, skull in pairs(workspace.Items:GetChildren()) do
 
-                if skull:IsA("Model") and string.find(skull.Name, "Crystal Skull Key") then
+                if skull:IsA("Model") and skull.Name == "Crystal Skull Key" then
 
                     if index == 1 then
 
-                        --print("index 1")
-                        index = index + 1
-
                         local args = {
                             skull
                         }
@@ -1850,13 +1981,13 @@ local SkullPodiumToggle = SkullTab:CreateToggle({
                             skull
                         }
                         game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("RequestStartDraggingItem"):FireServer(unpack(args))
-                    
-                        skull:PivotTo(jungle_key1.CFrame * CFrame.new(0,3,0))
+                        task.wait()
+                        skull:PivotTo(jungle_key1.CFrame * CFrame.new(0,1,0))
+                        print(tostring(index))
                         task.wait(1)
+                        index = 2
                     
                     elseif index == 2 then
-                        --print("index 2")
-                        index = index + 1
 
                         local args = {
                             skull
@@ -1868,12 +1999,14 @@ local SkullPodiumToggle = SkullTab:CreateToggle({
                             skull
                         }
                         game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("RequestStartDraggingItem"):FireServer(unpack(args))
-                    
-                        skull:PivotTo(jungle_key2.CFrame * CFrame.new(0,3,0))
+                        task.wait()
+                        skull:PivotTo(jungle_key2.CFrame * CFrame.new(0,1,0))
+                        print(tostring(index))
                         task.wait(1)
+                        index = 3
                     elseif index == 3 then
                         --print("index 3")
-                        index = index + 1
+                        
 
                         local args = {
                             skull
@@ -1885,13 +2018,17 @@ local SkullPodiumToggle = SkullTab:CreateToggle({
                             skull
                         }
                         game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("RequestStartDraggingItem"):FireServer(unpack(args))
-                    
-                        skull:PivotTo(jungle_key3.CFrame * CFrame.new(0,3,0))
+                        task.wait()
+                        skull:PivotTo(jungle_key3.CFrame * CFrame.new(0,1,0))
+                        print(tostring(index))
                         task.wait(1)
+                        index = 4
+                        --task.wait(312)
+                        -- 5 minute wait for additional spawns
+
                     elseif index == 4 then
                         --print("index 4")
-                        index = index + 1
-
+                        
                         local args = {
                             skull
                         }
@@ -1902,30 +2039,40 @@ local SkullPodiumToggle = SkullTab:CreateToggle({
                             skull
                         }
                         game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("RequestStartDraggingItem"):FireServer(unpack(args))
-                    
-                        skull:PivotTo(jungle_key4.CFrame * CFrame.new(0,3,0))
-                        task.wait(1)
-                    else
-                        break
+                        task.wait()
+                        skull:PivotTo(jungle_key4.CFrame * CFrame.new(0,1,0))
+                        print(tostring(index))
+                        task.wait(2)
+                        
+                        task.wait()
+                        
                     end
-
+                    
                 end
 
             end
-            task.wait(310)
+            task.wait(315)
             index = 1
 
         end
 
     end,
 })
-local Label = SkullTab:CreateLabel("Produce 4 Crystal Skull Keys automatically to the Jungle Temple")
-local Label = SkullTab:CreateLabel("every 5:00 minutes - Max Fire Recommended")
-local Paragraph = SkullTab:CreateParagraph({Title = "Important Notice", Content = "You must have atleast 4 skulls on the ground somewhere NOT in your sack. If Crystal skulls do not produce, you will need to TURN OFF auto skull > podium and clear the podiums manually to refresh the podiums. Then you may resume using auto skull > podium."
+local Label = SkullTab:CreateLabel("Opens the Jungle Temple every 5-6 minutes")
+local Label2 = SkullTab:CreateLabel(" --- Max Fire Recommended --- ")
+local Label3 = SkullTab:CreateLabel(" --- Didn't work? try teleporting to the temple first --- ")
+local Paragraph = SkullTab:CreateParagraph({Title = "Important Notice", Content = "You must have atleast 3-4 skulls on the ground somewhere NOT in your sack. Do not interact with the crystal skulls. If you experience issues turn toggle to OFF and wait 6-7 minutes for the cycle to refresh."})
 
 
 
-})
-
+local creditstablabel1 = CREDITS:CreateLabel("Developer: 4NTHOcyan", 0)
+local creditstablabel2 = CREDITS:CreateLabel("Find all my game menus on  Discord.gg/cWhpEDYPUB", 0)
+local creditstablabel3 = CREDITS:CreateLabel("or  rscripts.net/@4NTHOcyan", 0)
+local creditstablabel4 = CREDITS:CreateLabel("-----", 0)
+local creditstablabel5 = CREDITS:CreateLabel("Thanks for using Cyan-99! All of your support is helpful and appreciated.", 0)
+local creditstablabel6 = CREDITS:CreateLabel("Salamat sa paggamit ng Cyan-99! Malaking tulong at lubos ang inyong suporta.", 0)
+local creditstablabel7 = CREDITS:CreateLabel("Cyan-99를 이용해 주셔서 감사합니다! 여러분의 모든 지원에 진심으로 감사드립니다.", 0)
+local creditstablabel8 = CREDITS:CreateLabel("¡Gracias por usar Cyan-99! Agradecemos todo su apoyo.", 0)
+local creditstablabel9 = CREDITS:CreateLabel("Спасибо за использование Cyan-99! Ваша поддержка очень полезна и ценна.", 0)
 
 end
