@@ -4,7 +4,7 @@ if game.PlaceId == place_id then
 
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
-local _Version = "Cyan-99 v1.01f"
+local _Version = "Cyan-99 v1.1"
 
 local Window = Rayfield:CreateWindow({
    Name = _Version,
@@ -1016,8 +1016,95 @@ local chopToggle = TreeTab:CreateToggle({
 local cuttingLabel = TreeTab:CreateLabel("Hold Strong Axe / Chainsaw for quicker results", "axe")
 
 local saplingsection = TreeTab:CreateSection("Plant Saplings:")
+local saplingindex
+local treeplaceDropdown = TreeTab:CreateDropdown({
+    Name = "Plant Location:",
+    Options = {"Surround Base", "At Feet"},
+    CurrentOption = Options,
+    MultipleOptions = false,
+    Flag = "Dropdown1", -- A flag is the identifier for the configuration file; make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+    Callback = function(Options)
+        saplingindex = Options[1]
+    end,
+})
 
-local WIPLabel = TreeTab:CreateLabel("work in progess, tree chop aura IS working 3-09-26", 0)
+local UNIVERSAL_VECTOR = Vector3.new(0, 0.5, 0)
+local radius = 130
+
+local test_number = 0
+
+local function plantSappscircle()
+    for i = 0, 300, 1 do
+
+        local angle = i * (math.pi * 2) / 300
+        local x = UNIVERSAL_VECTOR.X + radius * math.cos(angle)
+        local z = UNIVERSAL_VECTOR.Z + radius * math.sin(angle)
+
+        local args = {
+            workspace.Items:FindFirstChild("Sapling"),
+            vector.create(x, UNIVERSAL_VECTOR.Y, z)
+        }
+        game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("RequestPlantItem"):InvokeServer(unpack(args))
+        --print("planted")
+        test_number = test_number + 1
+        --print("test num: "..tostring(test_number))
+    end
+    task.wait(0.133)
+    print("done / 300")
+end
+
+local plant_feet_cord = Vector3.new(HRP.CFrame.Position.X, 0.45, HRP.CFrame.Position.Z)
+
+local function plantSappsFeet()
+
+    for i = 0, 300, 1 do
+
+        local args = {
+            workspace.Items:FindFirstChild("Sapling"),
+            vector.create(plant_feet_cord.X, plant_feet_cord.Y, plant_feet_cord.Z)
+        }
+        game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("RequestPlantItem"):InvokeServer(unpack(args))
+
+    end
+    task.wait(0.133)
+    print("done / 300")
+end
+
+local plantSurroundButton = TreeTab:CreateButton({
+    Name = "Plant Saplings",
+    Callback = function()
+        if saplingindex == "Surround Base" then
+            local success, error = pcall(plantSappscircle)
+
+            if error then
+                Rayfield:Notify({
+                    Title = "Notification",
+                    Content = "No Saplings detected",
+                    Duration = 8,
+                    Image = 4483362458,
+                })
+            print(error)
+            end
+
+        elseif saplingindex == "At Feet" then
+            local success, error = pcall(plantSappsFeet)
+
+            if error then
+                Rayfield:Notify({
+                    Title = "Notification",
+                    Content = "No Saplings detected",
+                    Duration = 8,
+                    Image = 4483362458,
+                })
+            print(error)
+            end
+
+
+        end
+    end,
+})
+
+local saplingsLabel = TreeTab:CreateLabel("Plants all Saplings - up to 300", "sprout")
 
 
 --// Bring Items Tab create
@@ -2060,7 +2147,7 @@ local SkullPodiumToggle = SkullTab:CreateToggle({
 })
 local Label = SkullTab:CreateLabel("Opens the Jungle Temple every 5-6 minutes")
 local Label2 = SkullTab:CreateLabel(" --- Max Fire Recommended --- ")
-local Label3 = SkullTab:CreateLabel(" --- Didn't work? try teleporting to the temple first --- ")
+local Label3 = SkullTab:CreateLabel(" --- Didn't work? Try teleporting to the temple first --- ")
 local Paragraph = SkullTab:CreateParagraph({Title = "Important Notice", Content = "You must have atleast 3-4 skulls on the ground somewhere NOT in your sack. Do not interact with the crystal skulls. If you experience issues turn toggle to OFF and wait 6-7 minutes for the cycle to refresh."})
 
 
