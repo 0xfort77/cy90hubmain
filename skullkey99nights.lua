@@ -4,7 +4,7 @@ if game.PlaceId == place_id then
 
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
-local _Version = "Cyan-99 v1.1"
+local _Version = "Cyan-99 v1.11"
 
 local Window = Rayfield:CreateWindow({
    Name = _Version,
@@ -1041,7 +1041,7 @@ local function plantSappscircle()
         local z = UNIVERSAL_VECTOR.Z + radius * math.sin(angle)
 
         local args = {
-            workspace.Items:FindFirstChild("Sapling"),
+            workspace.Items:FindFirstChild("Sapling") or workspace.Items:FindFirstChild("Brightwood Sapling"),
             vector.create(x, UNIVERSAL_VECTOR.Y, z)
         }
         game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("RequestPlantItem"):InvokeServer(unpack(args))
@@ -1060,7 +1060,7 @@ local function plantSappsFeet()
     for i = 0, 300, 1 do
 
         local args = {
-            workspace.Items:FindFirstChild("Sapling"),
+            workspace.Items:FindFirstChild("Sapling") or workspace.Items:FindFirstChild("Brightwood Sapling"),
             vector.create(plant_feet_cord.X, plant_feet_cord.Y, plant_feet_cord.Z)
         }
         game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("RequestPlantItem"):InvokeServer(unpack(args))
@@ -2130,15 +2130,15 @@ local SkullPodiumToggle = SkullTab:CreateToggle({
                         skull:PivotTo(jungle_key4.CFrame * CFrame.new(0,1,0))
                         print(tostring(index))
                         task.wait(2)
-                        
-                        task.wait()
+                        index = 1
+                        task.wait(315)
                         
                     end
                     
                 end
 
             end
-            task.wait(315)
+            task.wait()
             index = 1
 
         end
