@@ -4,7 +4,7 @@ if game.PlaceId == place_id then
 
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
-local _Version = "Cyan-99 v1.11"
+local _Version = "Cyan-99 v1.01f"
 
 local Window = Rayfield:CreateWindow({
    Name = _Version,
@@ -63,6 +63,8 @@ local kill_flag = false
 local chop_trees_flag = false
 local always_day_flag = false
 local insta_chest_flag = false
+local temporal_flag = false
+local strongholdA_flag = false
 
 --workspace.Map.Landmarks["Jungle Temple"].Functional.Podiums:GetChildren()[4].TouchZone
 local jungle_key1 = workspace.Map.Landmarks["Jungle Temple"].Functional.Podiums:GetChildren()[1].TouchZone
@@ -556,6 +558,108 @@ local instaChestButton = MainTab:CreateToggle({
     end,
 })
 
+local temporal_activ = game:GetService("Players").LocalPlayer.PlayerGui.Interface.GemActivateMenu.Amount.Frame.BuyButton
+local day_timer = game:GetService("Players").LocalPlayer.PlayerGui.Interface.TopRight.Frame.SunDial.RealTimer
+local sun_pic = game:GetService("Players").LocalPlayer.PlayerGui.Interface.TopRight.Frame.SunDial.RainLabel.Image
+local day_tell = game:GetService("Lighting").Brightness -- 2.5 for night, 1 for day
+
+local autoskipnightButton = MainTab:CreateToggle({
+    Name = "Auto-Skip Nights",
+    CurrentValue = false,
+    Callback = function(Value) 
+    
+        temporal_flag = Value
+
+        if temporal_flag then
+
+            Rayfield:Notify({
+                Title = "Notification",
+                Content = "Auto-Skip Nights enabled",
+                Duration = 10,
+                Image = 4483362458,
+            })
+
+        end
+
+        while temporal_flag do
+            task.wait(0.25)
+            if day_timer.Text == "1:30" then
+                print("con met")
+                if game:GetService("Players").LocalPlayer.PlayerGui.Interface.TopRight.Frame.SunDial.RainLabel.Image == "rbxassetid://71043129916600" then
+
+                    local args = {
+	                    workspace.Structures:FindFirstChild("Temporal Accelerometer")
+                    }
+                    game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("RequestActivateNightSkipMachine"):FireServer(unpack(args))
+                end
+            else
+                continue
+            end
+            task.wait(0.25)
+        end
+    
+    end,
+
+})
+
+-- workspace.Map.Landmarks.Stronghold.Functional.Sign.SurfaceGui.Frame.Body.Text
+
+--local autostrongholdButton = MainTab:CreateToggle({
+--    Name = "Auto Stronghold",
+--    CurrentValue = false,
+--    Callback = function(Value) 
+--        strongholdA_flag = Value
+--
+--        if strongholdA_flag then
+--            Rayfield:Notify({
+--                Title = "Notification",
+--                Content = "Auto Stronghold enabled",
+--                Duration = 10,
+--                Image = 4483362458,
+--            })
+--        end
+--
+--        while strongholdA_flag do
+--
+--            if stronghold_loc:FindFirstChild("Stronghold") then
+--                task.wait(0.5)
+--
+--                if workspace.Map.Landmarks.Stronghold.Functional.Sign.SurfaceGui.Frame.Body.Text == "00s" then
+--
+--                    HRP.CFrame = workspace.Map.Landmarks.Stronghold.Building.Floor.Part
+--
+--                    HRP.CFrame = workspace.Map.Landmarks.Stronghold.Building.Floor:GetChildren()[28].CFrame * CFrame.new(0, 5, 0) -- initialize
+--                    task.wait(3)
+--                    HRP.CFrame = workspace.Map.Landmarks.Stronghold.Building.Floor2:GetChildren()[1].CFrame * CFrame.new(0, 1, 0) -- window
+--                    --task.wait(240)
+--                    HRP.CFrame = workspace.Items["Stronghold Diamond Chest"].Platform.CFrame * CFrame.new(0, 6, 0)
+--                    local prox = workspace.Items["Stronghold Diamond Chest"].Main.ProximityAttachment.ProximityInteraction
+--                    prox.HoldDuration = 0
+--                    task.wait()
+--                    fireproximityprompt(workspace.Items["Stronghold Diamond Chest"].Main.ProximityAttachment.ProximityInteraction)
+--                    task.wait(1)
+--                    HRP.CFrame = FIREZONE.CFrame * CFrame.new(0,6,0)
+--                    task.wait(840)
+--
+--                end
+--
+--
+--            else
+--                Rayfield:Notify({
+--                    Title = "Notification",
+--                    Content = "No Stronghold detected!",
+--                    Duration = 10,
+--                    Image = 4483362458,
+--                })
+--            end
+--
+--        end
+--    end,
+--
+--})
+
+
+
 --// Create Move teleport Tab
 
 local movesection1 = MoveTab:CreateSection("Teleport to:")
@@ -607,7 +711,16 @@ local SHButton = MoveTab:CreateButton({
     Name = "Stronghold",
     Callback = function()
         if stronghold_loc:FindFirstChild("Stronghold") then
-            HRP.CFrame = stronghold_loc.Stronghold.Building.Exterior:GetChildren()[12].Model:GetChildren()[2].CFrame * CFrame.new(0,6,0)
+            if stronghold_loc.Stronghold.Building.Exterior:GetChildren()[12]:FindFirstChild("Model") then
+                HRP.CFrame = stronghold_loc.Stronghold.Building.Exterior:GetChildren()[12].Model:GetChildren()[2].CFrame * CFrame.new(0,6,0)
+            else
+                Rayfield:Notify({
+                Title = "Notification",
+                Content = "No Stronghold detected!",
+                Duration = 10,
+                Image = 4483362458,
+            })
+            end
         else
             Rayfield:Notify({
                 Title = "Notification",
@@ -1053,7 +1166,7 @@ local function plantSappscircle()
     print("done / 300")
 end
 
-local plant_feet_cord = Vector3.new(HRP.CFrame.Position.X, 0.45, HRP.CFrame.Position.Z)
+-- local plant_feet_cord = Vector3.new(HRP.CFrame.Position.X, 0.45, HRP.CFrame.Position.Z)
 
 local function plantSappsFeet()
 
@@ -1061,7 +1174,7 @@ local function plantSappsFeet()
 
         local args = {
             workspace.Items:FindFirstChild("Sapling") or workspace.Items:FindFirstChild("Brightwood Sapling"),
-            vector.create(plant_feet_cord.X, plant_feet_cord.Y, plant_feet_cord.Z)
+            vector.create(HRP.CFrame.Position.X, 0.45, HRP.CFrame.Position.Z)
         }
         game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("RequestPlantItem"):InvokeServer(unpack(args))
 
