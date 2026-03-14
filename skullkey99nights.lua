@@ -4,7 +4,7 @@ if game.PlaceId == place_id then
 
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
-local _Version = "Cyan-99 v1.01f"
+local _Version = "Cyan-99 v1.2"
 
 local Window = Rayfield:CreateWindow({
    Name = _Version,
