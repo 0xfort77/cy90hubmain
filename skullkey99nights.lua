@@ -67,10 +67,10 @@ local temporal_flag = false
 local strongholdA_flag = false
 
 --workspace.Map.Landmarks["Jungle Temple"].Functional.Podiums:GetChildren()[4].TouchZone
-local jungle_key1 = workspace.Map.Landmarks["Jungle Temple"].Functional.Podiums:GetChildren()[1].TouchZone
-local jungle_key2 = workspace.Map.Landmarks["Jungle Temple"].Functional.Podiums:GetChildren()[2].TouchZone
-local jungle_key3 = workspace.Map.Landmarks["Jungle Temple"].Functional.Podiums:GetChildren()[3].TouchZone
-local jungle_key4 = workspace.Map.Landmarks["Jungle Temple"].Functional.Podiums:GetChildren()[4].TouchZone
+--local jungle_key1 = workspace.Map.Landmarks["Jungle Temple"].Functional.Podiums:GetChildren()[1].TouchZone
+--local jungle_key2 = workspace.Map.Landmarks["Jungle Temple"].Functional.Podiums:GetChildren()[2].TouchZone
+--local jungle_key3 = workspace.Map.Landmarks["Jungle Temple"].Functional.Podiums:GetChildren()[3].TouchZone
+--local jungle_key4 = workspace.Map.Landmarks["Jungle Temple"].Functional.Podiums:GetChildren()[4].TouchZone
 
 local LIGHT = game:GetService("Lighting")
 
@@ -2182,7 +2182,7 @@ local SkullPodiumToggle = SkullTab:CreateToggle({
                         }
                         game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("RequestStartDraggingItem"):FireServer(unpack(args))
                         task.wait()
-                        skull:PivotTo(jungle_key1.CFrame * CFrame.new(0,1,0))
+                        skull:PivotTo(workspace.Map.Landmarks["Jungle Temple"].Functional.Podiums:GetChildren()[1].TouchZone.CFrame * CFrame.new(0,1,0))
                         print(tostring(index))
                         task.wait(1)
                         index = 2
@@ -2200,7 +2200,7 @@ local SkullPodiumToggle = SkullTab:CreateToggle({
                         }
                         game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("RequestStartDraggingItem"):FireServer(unpack(args))
                         task.wait()
-                        skull:PivotTo(jungle_key2.CFrame * CFrame.new(0,1,0))
+                        skull:PivotTo(workspace.Map.Landmarks["Jungle Temple"].Functional.Podiums:GetChildren()[2].TouchZone.CFrame * CFrame.new(0,1,0))
                         print(tostring(index))
                         task.wait(1)
                         index = 3
@@ -2219,7 +2219,7 @@ local SkullPodiumToggle = SkullTab:CreateToggle({
                         }
                         game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("RequestStartDraggingItem"):FireServer(unpack(args))
                         task.wait()
-                        skull:PivotTo(jungle_key3.CFrame * CFrame.new(0,1,0))
+                        skull:PivotTo(workspace.Map.Landmarks["Jungle Temple"].Functional.Podiums:GetChildren()[3].TouchZone.CFrame * CFrame.new(0,1,0))
                         print(tostring(index))
                         task.wait(1)
                         index = 4
@@ -2240,7 +2240,7 @@ local SkullPodiumToggle = SkullTab:CreateToggle({
                         }
                         game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("RequestStartDraggingItem"):FireServer(unpack(args))
                         task.wait()
-                        skull:PivotTo(jungle_key4.CFrame * CFrame.new(0,1,0))
+                        skull:PivotTo(workspace.Map.Landmarks["Jungle Temple"].Functional.Podiums:GetChildren()[4].TouchZone.CFrame * CFrame.new(0,1,0))
                         print(tostring(index))
                         task.wait(2)
                         index = 1
