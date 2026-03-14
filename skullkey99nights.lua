@@ -4,7 +4,7 @@ if game.PlaceId == place_id then
 
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
-local _Version = "Cyan-99 v1.2"
+local _Version = "Cyan-99 v1.3"
 
 local Window = Rayfield:CreateWindow({
    Name = _Version,
@@ -65,6 +65,7 @@ local always_day_flag = false
 local insta_chest_flag = false
 local temporal_flag = false
 local strongholdA_flag = false
+local cultist_S_flag = false
 
 --workspace.Map.Landmarks["Jungle Temple"].Functional.Podiums:GetChildren()[4].TouchZone
 --local jungle_key1 = workspace.Map.Landmarks["Jungle Temple"].Functional.Podiums:GetChildren()[1].TouchZone
@@ -602,6 +603,55 @@ local autoskipnightButton = MainTab:CreateToggle({
 
 })
 
+local cultVolcanoToggle = MainTab:CreateToggle({
+    Name = "Auto Sacrifice 🌋",
+    CurrentValue = false,
+    Flag = "cultToggle1", -- A flag is the identifier for the configuration file; make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+    Callback = function(Value)
+        cultist_S_flag = Value
+
+        if cultist_S_flag then
+            Rayfield:Notify({
+                Title = "Notification",
+                Content = "Auto Sacrifice enabled",
+                Duration = 10,
+                Image = 4483362458,
+            })
+
+        end
+
+        while cultist_S_flag do
+
+            task.wait(0.15)
+            if workspace.Map.Landmarks.Volcano.Functional:FindFirstChild("Lava") then
+
+
+                for _, cult in pairs(workspace.Items:GetChildren()) do
+                    if cult.Name == "Cultist" or cult.Name == "Crossbow Cultist" then
+                        local args = {
+	                        cult,
+	                        workspace:WaitForChild("Map"):WaitForChild("Landmarks"):WaitForChild("Volcano"):WaitForChild("Functional"):WaitForChild("Lava")
+                        }
+                        game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("RequestLavaBurnItem"):InvokeServer(unpack(args))
+
+                    end
+
+                end
+
+            else
+                Rayfield:Notify({
+                Title = "Notification",
+                Content = "No Lava detected!",
+                Duration = 10,
+                Image = 4483362458,
+            })
+            end
+            task.wait(0.25)
+
+        end
+    end,
+})
+
 -- workspace.Map.Landmarks.Stronghold.Functional.Sign.SurfaceGui.Frame.Body.Text
 
 --local autostrongholdButton = MainTab:CreateToggle({
@@ -669,6 +719,23 @@ local CampButton = MoveTab:CreateButton({
     Callback = function()
 
         HRP.CFrame = FIREZONE.CFrame * CFrame.new(0,6,0)   
+
+    end,
+})
+
+local volcanobutton = MoveTab:CreateButton({
+    Name = "Volcano Sacrifice",
+    Callback = function()
+        if workspace.Map.Landmarks:FindFirstChild("Volcano") then
+            HRP.CFrame = workspace.Map.Landmarks.Volcano.Functional.Sacrifice.Altar.Platform.CFrame * CFrame.new(0,10,0)
+        else
+            Rayfield:Notify({
+                Title = "Notification",
+                Content = "No Volcano detected!",
+                Duration = 10,
+                Image = 4483362458,
+            })
+        end
 
     end,
 })
