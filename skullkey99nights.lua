@@ -82,7 +82,7 @@ local upg_hut = workspace.Map.Landmarks
 
 local missing_kids_folder_loc = workspace.Map:WaitForChild("MissingKids"):GetAttributes()
 
-local jung_temp_stair = workspace.Map.Landmarks["Jungle Temple"].Functional.Stairwell.Moving["0"]
+--local jung_temp_stair = workspace.Map.Landmarks["Jungle Temple"].Functional.Stairwell.Moving["0"]
 --local jung_fight_pit = workspace.Map.Landmarks:FindFirstChild("Jungle Fight Pit").Functional.ArenaLootZones:FindFirstChild("LootZone").Zone
 
 local NPC_enemies = workspace.Characters
@@ -678,7 +678,7 @@ local TempleButton = MoveTab:CreateButton({
     Callback = function()
         if workspace.Map.Landmarks:FindFirstChild("Jungle Temple") then
 
-            HRP.CFrame = jung_temp_stair.CFrame * CFrame.new(0,6,0)   
+            HRP.CFrame = workspace.Map.Landmarks["Jungle Temple"].Functional.Stairwell.Moving["0"].CFrame * CFrame.new(0,6,0)   
         else
             Rayfield:Notify({
                 Title = "Notification",
