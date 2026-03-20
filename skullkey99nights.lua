@@ -4,7 +4,7 @@ if game.PlaceId == place_id then
 
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
-local _Version = "Cyan-99 v1.6.s"
+local _Version = "Cyan-99 v1.7.s"
 
 local Window = Rayfield:CreateWindow({
    Name = _Version,
@@ -52,6 +52,7 @@ local HRP = charr:FindFirstChild("HumanoidRootPart")
 local my_humanoid = charr:FindFirstChild("Humanoid")
 local my_head = game.Players.LocalPlayer.Character.Head
 local MyUserID = game.Players.LocalPlayer.UserId
+local my_name = player.Name
 
 local skull_podium_flag = false
 local run_toggle_flag = false
@@ -272,6 +273,26 @@ local HealthToggle = MainTab:CreateToggle({
 
 local mainsection22 = MainTab:CreateSection("World:")
 
+local acceptable_weapons_table = {
+    "Good Axe",
+    "Old Axe",
+    "Strong Axe",
+    "Spear",
+    "Chainsaw",
+    "Infernal Sword",
+    "Ice Sword",
+    "Morningstar",
+    "Flamethrower",
+    "Poison Spear",
+    "Poison Claws",
+    "Obsidiron Hammer",
+    "Scythe",
+    "Vampire Scythe",
+    "Katana",
+    "Trident",
+    "Laser Sword",
+}
+
 local KILLToggle = MainTab:CreateToggle({
     Name = "Kill Aura",
     CurrentValue = false,
@@ -300,173 +321,40 @@ local KILLToggle = MainTab:CreateToggle({
         end
 
         while kill_flag do
+            local weap_name_ = workspace[my_name]:WaitForChild("ToolHandle"):WaitForChild("OriginalItem").Value
+            print("equipped "..tostring(weap_name_))
+            if table.find(acceptable_weapons_table, tostring(weap_name_)) then
+                local includeparams = OverlapParams.new()
+                local excludeparams = OverlapParams.new()
+                includeparams.FilterType = Enum.RaycastFilterType.Include
+                includeparams.FilterDescendantsInstances = {NPC_enemies}
+                --includeparams.CollisionGroup = "NPCs"
+                excludeparams.FilterType = Enum.RaycastFilterType.Exclude
+                excludeparams.FilterDescendantsInstances = {}
+                excludeparams.MaxParts = 220 -- changed
+                local worldrootradius = workspace:GetPartBoundsInBox(HRP.CFrame, Vector3.new(180,60,180), includeparams, excludeparams)
 
-            local includeparams = OverlapParams.new()
-            local excludeparams = OverlapParams.new()
-            includeparams.FilterType = Enum.RaycastFilterType.Include
-            includeparams.FilterDescendantsInstances = {NPC_enemies}
-            --includeparams.CollisionGroup = "NPCs"
-            excludeparams.FilterType = Enum.RaycastFilterType.Exclude
-            excludeparams.FilterDescendantsInstances = {}
-            excludeparams.MaxParts = 120
-            local worldrootradius = workspace:GetPartBoundsInBox(HRP.CFrame, Vector3.new(180,60,180), includeparams, excludeparams) -- WIP HERE 03/16/26
+                for _, v in pairs(worldrootradius) do
+                    if v:IsA("Part") and v.Name == "HumanoidRootPart" or v.Name == "Head" then
+                        --v.CanQuery = true
+                        --print(v.Parent)
+                        task.wait()
 
-            for _, v in pairs(worldrootradius) do
-                if v:IsA("Part") and v.Name == "HumanoidRootPart" then
-                    --v.CanQuery = true
-                    --print(v.Parent)
-                    
-                    
-                    for _, item in pairs(game:GetService("Players").LocalPlayer.Inventory:GetChildren()) do
-                    
-                        if string.find(item.Name, "Old Axe") then
-                        
-                            local args = {
-                                v.Parent,
-                                game.Players.LocalPlayer.Inventory:WaitForChild("Old Axe"),
-                                damage_hash,
-                                v.CFrame * CFrame.new(0,0,0)
-                            }
-                            game.ReplicatedStorage.RemoteEvents.ToolDamageObject:InvokeServer(unpack(args))
-                        elseif string.find(item.Name, "Good Axe") then
-                            local args = {
-                                v.Parent,
-                                game.Players.LocalPlayer.Inventory:WaitForChild("Good Axe"),
-                                damage_hash,
-                                v.CFrame * CFrame.new(0,0,0)
-                            }
-                            game.ReplicatedStorage.RemoteEvents.ToolDamageObject:InvokeServer(unpack(args))
+                        local args = {
+                            v.Parent,
+                            game.Players.LocalPlayer.Inventory:WaitForChild(tostring(weap_name_)),
+                            damage_hash,
+                            v.CFrame * CFrame.new(0,0,0)
+                        }
+                        game.ReplicatedStorage.RemoteEvents.ToolDamageObject:InvokeServer(unpack(args))
 
-                        elseif string.find(item.Name, "Strong Axe") then
-                            local args = {
-                                v.Parent,
-                                game.Players.LocalPlayer.Inventory:WaitForChild("Strong Axe"),
-                                damage_hash,
-                                v.CFrame * CFrame.new(0,0,0)
-                            }
-                            game.ReplicatedStorage.RemoteEvents.ToolDamageObject:InvokeServer(unpack(args))
---
-                        elseif string.find(item.Name, "Chainsaw") then
-                            local args = {
-                                v.Parent,
-                                game.Players.LocalPlayer.Inventory:WaitForChild("Chainsaw"),
-                                damage_hash,
-                                v.CFrame * CFrame.new(0,0,0)
-                            }
-                            game.ReplicatedStorage.RemoteEvents.ToolDamageObject:InvokeServer(unpack(args))
-                        elseif string.find(item.Name, "Spear") then
-                            local args = {
-                                v.Parent,
-                                game.Players.LocalPlayer.Inventory:WaitForChild("Spear"),
-                                damage_hash,
-                                v.CFrame * CFrame.new(0,0,0)
-                            }
-                            game.ReplicatedStorage.RemoteEvents.ToolDamageObject:InvokeServer(unpack(args))
-                        elseif string.find(item.Name, "Morningstar") then
-                            local args = {
-                                v.Parent,
-                                game.Players.LocalPlayer.Inventory:WaitForChild("Morningstar"),
-                                damage_hash,
-                                v.CFrame * CFrame.new(0,0,0)
-                            }
-                            game.ReplicatedStorage.RemoteEvents.ToolDamageObject:InvokeServer(unpack(args))
-                        elseif string.find(item.Name, "Poison Claws") then
-                            local args = {
-                                v.Parent,
-                                game.Players.LocalPlayer.Inventory:WaitForChild("Poison Claws"),
-                                damage_hash,
-                                v.CFrame * CFrame.new(0,0,0)
-                            }
-                            game.ReplicatedStorage.RemoteEvents.ToolDamageObject:InvokeServer(unpack(args))
-                        elseif string.find(item.Name, "Obsidiron Hammer") then
-                            local args = {
-                                v.Parent,
-                                game.Players.LocalPlayer.Inventory:WaitForChild("Obsidiron Hammer"),
-                                damage_hash,
-                                v.CFrame * CFrame.new(0,0,0)
-                            }
-                            game.ReplicatedStorage.RemoteEvents.ToolDamageObject:InvokeServer(unpack(args))
-                        elseif string.find(item.Name, "Katana") then
-                            local args = {
-                                v.Parent,
-                                game.Players.LocalPlayer.Inventory:WaitForChild("Katana"),
-                                damage_hash,
-                                v.CFrame * CFrame.new(0,0,0)
-                            }
-                            game.ReplicatedStorage.RemoteEvents.ToolDamageObject:InvokeServer(unpack(args))
-                        elseif string.find(item.Name, "Flamethrower") then
-                            local args = {
-                                v.Parent,
-                                game.Players.LocalPlayer.Inventory:WaitForChild("Flamethrower"),
-                                damage_hash,
-                                v.CFrame * CFrame.new(0,0,0)
-                            }
-                            game.ReplicatedStorage.RemoteEvents.ToolDamageObject:InvokeServer(unpack(args))
-                        elseif string.find(item.Name, "Trident") then
-                            local args = {
-                                v.Parent,
-                                game.Players.LocalPlayer.Inventory:WaitForChild("Trident"),
-                                damage_hash,
-                                v.CFrame * CFrame.new(0,0,0)
-                            }
-                            game.ReplicatedStorage.RemoteEvents.ToolDamageObject:InvokeServer(unpack(args))
-                        elseif string.find(item.Name, "Poison Spear") then
-                            local args = {
-                                v.Parent,
-                                game.Players.LocalPlayer.Inventory:WaitForChild("Poison Spear"),
-                                damage_hash,
-                                v.CFrame * CFrame.new(0,0,0)
-                            }
-                            game.ReplicatedStorage.RemoteEvents.ToolDamageObject:InvokeServer(unpack(args))
-                        elseif string.find(item.Name, "Laser Sword") then
-                            local args = {
-                                v.Parent,
-                                game.Players.LocalPlayer.Inventory:WaitForChild("Laser Sword"),
-                                damage_hash,
-                                v.CFrame * CFrame.new(0,0,0)
-                            }
-                            game.ReplicatedStorage.RemoteEvents.ToolDamageObject:InvokeServer(unpack(args))
-                        elseif string.find(item.Name, "Vampire Scythe") then
-                            local args = {
-                                v.Parent,
-                                game.Players.LocalPlayer.Inventory:WaitForChild("Vampire Scythe"),
-                                damage_hash,
-                                v.CFrame * CFrame.new(0,0,0)
-                            }
-                            game.ReplicatedStorage.RemoteEvents.ToolDamageObject:InvokeServer(unpack(args))
-                        elseif string.find(item.Name, "Scythe") then
-                            local args = {
-                                v.Parent,
-                                game.Players.LocalPlayer.Inventory:WaitForChild("Scythe"),
-                                damage_hash,
-                                v.CFrame * CFrame.new(0,0,0)
-                            }
-                            game.ReplicatedStorage.RemoteEvents.ToolDamageObject:InvokeServer(unpack(args)) -- here
-                        elseif string.find(item.Name, "Infernal Sword") then
-                            local args = {
-                                v.Parent,
-                                game.Players.LocalPlayer.Inventory:WaitForChild("Infernal Sword"),
-                                damage_hash,
-                                v.CFrame * CFrame.new(0,0,0)
-                            }
-                            game.ReplicatedStorage.RemoteEvents.ToolDamageObject:InvokeServer(unpack(args))
-                        elseif string.find(item.Name, "Ice Sword") then
-                            local args = {
-                                v.Parent,
-                                game.Players.LocalPlayer.Inventory:WaitForChild("Ice Sword"),
-                                damage_hash,
-                                v.CFrame * CFrame.new(0,0,0)
-                            }
-                            game.ReplicatedStorage.RemoteEvents.ToolDamageObject:InvokeServer(unpack(args))
-
-                        end
                     end
 
-                        
                 end
-
+            else
+                task.wait(0.01)
+                continue
             end
-
             --print(worldrootradius)
 
             task.wait()
@@ -543,7 +431,7 @@ local instaChestButton = MainTab:CreateToggle({
         while insta_chest_flag do
             for _, Chest in pairs(workspace.Items:GetChildren()) do
 
-                if Chest.Name == "Item Chest" or Chest.Name == "Item Chest2" or Chest.Name == "Item Chest3" or Chest.Name == "Item Chest4" or Chest.Name == "Item Chest5" or Chest.Name == "Item Chest6" or Chest.Name == "Jungle Chest1" or Chest.Name == "Jungle Chest2" or Chest.Name == "Stronghold Diamond Chest" or Chest.Name == "Stone Chest1" or Chest.Name == "Stone Chest2" or Chest.Name == "Mossy Chest" or Chest.Name == "Obsidiron Chest" or Chest.Name == "Small Present" then
+                if Chest.Name == "Item Chest" or Chest.Name == "Item Chest2" or Chest.Name == "Item Chest3" or Chest.Name == "Item Chest4" or Chest.Name == "Item Chest5" or Chest.Name == "Item Chest6" or Chest.Name == "Jungle Chest1" or Chest.Name == "Jungle Chest2" or Chest.Name == "Stronghold Diamond Chest" or Chest.Name == "Stone Chest1" or Chest.Name == "Stone Chest2" or Chest.Name == "Mossy Chest" or Chest.Name == "Obsidiron Chest" or Chest.Name == "Small Present" or Chest.Name == "Giant Present" then
 
                     for _, m in pairs(Chest:GetChildren()) do
 
@@ -722,7 +610,7 @@ local coinsButton = MainTab:CreateButton({
     end,
 })
 
-local autoSHButton = MainTab:CreateToggle({
+local autoSHButton = MainTab:CreateToggle({ -- workspace.Map.Landmarks.Stronghold.Functional.FinalGate.Main CFrame Y changes when done **
     Name = "Auto Stronghold",
     CurrentValue = false,
     Callback = function(Value) 
@@ -744,29 +632,51 @@ local autoSHButton = MainTab:CreateToggle({
                 local internal_time = workspace.Map.Landmarks.Stronghold.Functional.Sign.SurfaceGui.Frame.Body.Text
 
                 if internal_time == "00s" then
-
-                    HRP.CFrame = workspace.Map.Landmarks.Stronghold.Functional.EnemyWaves12.Wave1.TriggerZone.CFrame * CFrame.new(0,13,0)
-                    task.wait(5)
-                    HRP.CFrame = workspace.Map.Landmarks.Stronghold.Functional.EnemyWaves12.Wave1.TriggerZone.CFrame * CFrame.new(0,26,0)
-                    task.wait(190)
-                    HRP.CFrame = workspace.Items["Stronghold Diamond Chest"].Platform.CFrame * CFrame.new(0,6,0)
-                    task.wait()
-                    local d_chest_prox = workspace.Items["Stronghold Diamond Chest"].Main.ProximityAttachment.ProximityInteraction
-                    task.wait(1)
-                    fireproximityprompt(d_chest_prox)
-                    task.wait()
-                    for _, d in pairs(workspace.Items:GetChildren()) do
-                        if d.Name == "Diamond" then
-                            local args = {
-                                d,
-                            }
-                            game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("RequestTakeDiamonds"):FireServer(unpack(args))
+                    local init_sh = false
+                    local done_sh = false
+                    for i=1, 5 do
+                        HRP.CFrame = workspace.Map.Landmarks.Stronghold.Functional.EnemyWaves12.Wave1.TriggerZone.CFrame * CFrame.new(0,13,0)
+                        task.wait(6.5)
+                        --task.wait()
+                        HRP.CFrame = workspace.Map.Landmarks.Stronghold.Functional.EnemyWaves12.Wave1.TriggerZone.CFrame * CFrame.new(0,26,0)
+                        task.wait(4)
+                    end
+                    repeat
+                        --task.wait(6.5)
+                        --HRP.CFrame = workspace.Map.Landmarks.Stronghold.Functional.EnemyWaves12.Wave1.TriggerZone.CFrame * CFrame.new(0,13,0)
+                        task.wait(4)
+                        --HRP.CFrame = workspace.Map.Landmarks.Stronghold.Functional.EnemyWaves12.Wave1.TriggerZone.CFrame * CFrame.new(0,26,0)
+                        if workspace.Map.Landmarks.Stronghold.Functional.Braziers.Brazier.Main.FireAttach.Fire.Enabled == false then
+                            HRP.CFrame = workspace.Items["Stronghold Diamond Chest"].Platform.CFrame * CFrame.new(0,6,0)
+                            task.wait()
+                            local d_chest_prox = workspace.Items["Stronghold Diamond Chest"].Main.ProximityAttachment.ProximityInteraction
+                            task.wait(1)
+                            fireproximityprompt(d_chest_prox)
+                            task.wait(1)
+                            for _, d in pairs(workspace.Items:GetChildren()) do
+                                if d.Name == "Diamond" then
+                                    local args = {
+                                        d,
+                                    }
+                                    game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("RequestTakeDiamonds"):FireServer(unpack(args))
+                                end
+                            end
+                            task.wait(1)
+                            HRP.CFrame = FIREZONE.CFrame * CFrame.new(0,6,0)
+                            task.wait()
+                            done_sh = true
                         end
                         task.wait()
-                    end
+                    until done_sh
                     
-                    HRP.CFrame = FIREZONE.CFrame * CFrame.new(0,6,0) 
-                    task.wait(600)
+                    if done_sh then
+                         
+                        task.wait(600)
+                        done_sh = false
+                        --doing_sh = false
+                    end
+                    task.wait(1)
+
                 end
                 task.wait()
 
@@ -785,7 +695,7 @@ local autoSHButton = MainTab:CreateToggle({
     end,
 })
 
---local strongholdtablabel1 = MainTab:CreateLabel("Stronghold Time: None", 0)
+local strongholdtablabel1 = MainTab:CreateLabel("Player will teleport around to ensure initiation", "rss")
 --
 --task.spawn(function()
 --    while true do
@@ -2561,97 +2471,42 @@ local SkullPodiumToggle = SkullTab:CreateToggle({
         end
 
         local index = 1
+        local p_index = 1
 
         while skull_podium_flag do
             --print("flag on")
-            for _, skull in pairs(workspace.Items:GetChildren()) do
+            for s = 1, 4 do
+            --for _, skull in pairs(workspace.Items:GetChildren()) do
+                if workspace.Items:FindFirstChild("Crystal Skull Key") then
+                --if skull:IsA("Model") and skull.Name == "Crystal Skull Key" then
 
-                if skull:IsA("Model") and skull.Name == "Crystal Skull Key" then
+                    --if index == 1 then
+                    task.wait()
+                    local args = {
+                        workspace.Items:FindFirstChild("Crystal Skull Key")
+                    }
+                    game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("RequestStartDraggingItem"):FireServer(unpack(args))
+                    task.wait()
 
-                    if index == 1 then
-
-                        local args = {
-                            skull
-                        }
-                        game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("RequestStartDraggingItem"):FireServer(unpack(args))
-                        task.wait()
-
-                        local args = {
-                            skull
-                        }
-                        game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("RequestStartDraggingItem"):FireServer(unpack(args))
-                        task.wait()
-                        skull:PivotTo(workspace.Map.Landmarks["Jungle Temple"].Functional.Podiums:GetChildren()[1].TouchZone.CFrame * CFrame.new(0,1,0))
-                        print(tostring(index))
-                        task.wait(1)
-                        index = 2
-                    
-                    elseif index == 2 then
-
-                        local args = {
-                            skull
-                        }
-                        game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("RequestStartDraggingItem"):FireServer(unpack(args))
-                        task.wait()
-
-                        local args = {
-                            skull
-                        }
-                        game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("RequestStartDraggingItem"):FireServer(unpack(args))
-                        task.wait()
-                        skull:PivotTo(workspace.Map.Landmarks["Jungle Temple"].Functional.Podiums:GetChildren()[2].TouchZone.CFrame * CFrame.new(0,1,0))
-                        print(tostring(index))
-                        task.wait(1)
-                        index = 3
-                    elseif index == 3 then
-                        --print("index 3")
-                        
-
-                        local args = {
-                            skull
-                        }
-                        game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("RequestStartDraggingItem"):FireServer(unpack(args))
-                        task.wait()
-
-                        local args = {
-                            skull
-                        }
-                        game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("RequestStartDraggingItem"):FireServer(unpack(args))
-                        task.wait()
-                        skull:PivotTo(workspace.Map.Landmarks["Jungle Temple"].Functional.Podiums:GetChildren()[3].TouchZone.CFrame * CFrame.new(0,1,0))
-                        print(tostring(index))
-                        task.wait(1)
-                        index = 4
-                        --task.wait(312)
-                        -- 5 minute wait for additional spawns
-
-                    elseif index == 4 then
-                        --print("index 4")
-                        
-                        local args = {
-                            skull
-                        }
-                        game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("RequestStartDraggingItem"):FireServer(unpack(args))
-                        task.wait()
-
-                        local args = {
-                            skull
-                        }
-                        game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("RequestStartDraggingItem"):FireServer(unpack(args))
-                        task.wait()
-                        skull:PivotTo(workspace.Map.Landmarks["Jungle Temple"].Functional.Podiums:GetChildren()[4].TouchZone.CFrame * CFrame.new(0,1,0))
-                        print(tostring(index))
-                        task.wait(2)
-                        index = 1
-                        task.wait(315)
-                        
-                    end
+                    local args = {
+                        workspace.Items:FindFirstChild("Crystal Skull Key")
+                    }
+                    game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("RequestStartDraggingItem"):FireServer(unpack(args))
+                    task.wait()
+                    workspace.Items:FindFirstChild("Crystal Skull Key"):PivotTo(workspace.Map.Landmarks["Jungle Temple"].Functional.Podiums:GetChildren()[p_index].TouchZone.CFrame * CFrame.new(0,1,0))
+                    print("times moved: "..tostring(index))
+                    task.wait(1)
+                    index = index + 1
+                    p_index = p_index + 1
                     
                 end
 
             end
             task.wait()
+            p_index = 1
             index = 1
+            print("Final indx: "..tostring(index))
+            task.wait(315)
 
         end
 
