@@ -4,7 +4,7 @@ if game.PlaceId == place_id then
 
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
-local _Version = "Cyan-99 v1.8.Sc"
+local _Version = "Cyan-99 v1.9i"
 
 local Window = Rayfield:CreateWindow({
    Name = _Version,
@@ -70,6 +70,7 @@ local diamonds_flag = false
 local cultist_S_flag = false
 local auto_SH_flag = false
 local interface_flag = false
+local fishing_flag = false
 
 --workspace.Map.Landmarks["Jungle Temple"].Functional.Podiums:GetChildren()[4].TouchZone
 --local jungle_key1 = workspace.Map.Landmarks["Jungle Temple"].Functional.Podiums:GetChildren()[1].TouchZone
@@ -130,8 +131,17 @@ local TreeTab = Window:CreateTab("Trees", "trees")
 local ChestTab = Window:CreateTab("Chests", "package") -- Title, Image
 local SkullTab = Window:CreateTab("Skulls", "skull") -- Title, Image
 local BaseTab = Window:CreateTab("Skybase", "baseline")
+local ExtrasTab = Window:CreateTab("Extras", "star")
 local CREDITS = Window:CreateTab("Credits", "users") -- Title, Image
 
+--init hidden menus
+
+local scr_bench_init_ = workspace.Map.Campground.CraftingBench.TouchZone.ProximityAttachment.ProximityInteraction
+scr_bench_init_.HoldDuration = 0
+scr_bench_init_.RequiresLineOfSight = false
+task.wait()
+fireproximityprompt(scr_bench_init_)
+task.wait()
 
 --// create main tab 
 
@@ -538,11 +548,12 @@ local cultVolcanoToggle = MainTab:CreateToggle({
 
             else
                 Rayfield:Notify({
-                Title = "Notification",
-                Content = "No Lava detected!",
-                Duration = 10,
-                Image = 4483362458,
-            })
+                    Title = "Notification",
+                    Content = "No Lava detected!",
+                    Duration = 10,
+                    Image = 4483362458,
+                })
+                task.wait(4.5)
             end
             task.wait(0.25)
 
@@ -647,12 +658,21 @@ local autoSHButton = MainTab:CreateToggle({ -- workspace.Map.Landmarks.Stronghol
                         task.wait(4)
                         --HRP.CFrame = workspace.Map.Landmarks.Stronghold.Functional.EnemyWaves12.Wave1.TriggerZone.CFrame * CFrame.new(0,26,0)
                         if workspace.Map.Landmarks.Stronghold.Functional.Braziers.Brazier.Main.FireAttach.Fire.Enabled == false then
+
+                            local temporary_camera_obj = workspace.Camera
+                            temporary_camera_obj.CameraType = Enum.CameraType.Scriptable
+                            task.wait()
+                            temporary_camera_obj.CFrame = CFrame.new(562.174438, 62.9329605, -435.395081, -0.999985576, 0.00528905867, -0.000932605646, 0, 0.173648536, 0.98480773, 0.00537065091, 0.984793544, -0.173646033)
+
                             HRP.CFrame = workspace.Items["Stronghold Diamond Chest"].Platform.CFrame * CFrame.new(0,6,0)
                             task.wait()
                             local d_chest_prox = workspace.Items["Stronghold Diamond Chest"].Main.ProximityAttachment.ProximityInteraction
+                            task.wait()
+                            d_chest_prox.RequiresLineOfSight = false
                             task.wait(1)
                             fireproximityprompt(d_chest_prox)
                             task.wait(1)
+
                             for _, d in pairs(workspace.Items:GetChildren()) do
                                 if d.Name == "Diamond" then
                                     local args = {
@@ -662,6 +682,8 @@ local autoSHButton = MainTab:CreateToggle({ -- workspace.Map.Landmarks.Stronghol
                                 end
                             end
                             task.wait(1)
+                            temporary_camera_obj.CameraType = Enum.CameraType.Custom
+                            task.wait()
                             HRP.CFrame = FIREZONE.CFrame * CFrame.new(0,6,0)
                             task.wait()
                             done_sh = true
@@ -696,6 +718,41 @@ local autoSHButton = MainTab:CreateToggle({ -- workspace.Map.Landmarks.Stronghol
 })
 
 local strongholdtablabel1 = MainTab:CreateLabel("Player will teleport around to ensure initiation", "rss")
+
+local fishSuccessArea = game:GetService("Players").LocalPlayer.PlayerGui.Interface.FishingCatchFrame.TimingBar.SuccessArea
+
+local UICorner_F = Instance.new("UICorner",fishSuccessArea)
+UICorner_F.CornerRadius = UDim.new(0, 20)
+
+local Toggle = MainTab:CreateToggle({
+    Name = "Easy Fishing",
+    CurrentValue = false,
+    Flag = "Toggle1", -- A flag is the identifier for the configuration file; make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+    Callback = function(Value)
+        fishing_flag = Value
+
+        if fishing_flag then
+            Rayfield:Notify({
+                Title = "Notification",
+                Content = "Easy Fishing enabled",
+                Duration = 10,
+                Image = 4483362458,
+            })
+        end
+
+        while fishing_flag do
+
+            task.wait()
+            fishSuccessArea.Position = UDim2.new(0.5, 0, 1.19999996e-07, 0)
+            fishSuccessArea.Size = UDim2.new(1, 0, 1, 0)
+            task.wait()
+
+        end
+
+    end,
+})
+
+
 --
 --task.spawn(function()
 --    while true do
@@ -3355,16 +3412,80 @@ local removeskybaseButton = BaseTab:CreateButton({
     end,
 })
 
+-- Extras tab create 
+local warnlabel1ex = ExtrasTab:CreateLabel("NOTE: ", 0)
+local warnlabel2ex = ExtrasTab:CreateLabel("Before you enable any menus, you MUST open the Crafting Table menu manually atleast once :)", 0)
 
+local mainextrasSection = ExtrasTab:CreateSection("Main/Crafting:")
 
+local craftingmenuButton = ExtrasTab:CreateButton({
+    Name = "Show Crafting Table",
+    Callback = function()
+        local crafting_menu_path = game:GetService("Players").LocalPlayer.PlayerGui.Interface.CraftingTable
+
+        crafting_menu_path.Visible = true
+        crafting_menu_path.Active = true
+    end,
+})
+
+local fairyflowersmenuButton = ExtrasTab:CreateButton({
+    Name = "Show Flower Menu (Fairy)",
+    Callback = function()
+        local flowerfairy_menu_path = game:GetService("Players").LocalPlayer.PlayerGui.Interface.Flower
+
+        flowerfairy_menu_path.Visible = true
+        flowerfairy_menu_path.Active = true
+    end,
+})
+
+local skilltoolsmenuButton = ExtrasTab:CreateButton({
+    Name = "Show Buy Skill Tools",
+    Callback = function()
+        local skilltool_menu_path = game:GetService("Players").LocalPlayer.PlayerGui.Interface.ToolSmith
+
+        skilltool_menu_path.Visible = true
+        skilltool_menu_path.Active = true
+    end,
+})
+
+local decoSection = ExtrasTab:CreateSection("Deco:")
+
+local furnituremenuButton = ExtrasTab:CreateButton({
+    Name = "Show Furniture Menu",
+    Callback = function()
+        local furn_menu_path = game:GetService("Players").LocalPlayer.PlayerGui.Interface.Furniture
+
+        furn_menu_path.Visible = true
+        furn_menu_path.Active = true
+    end,
+})
+
+local hallSection = ExtrasTab:CreateSection("Halloween:")
+
+local haloweencostumesmenuButton = ExtrasTab:CreateButton({
+    Name = "Halloween Costumes Menu",
+    Callback = function()
+        local halloweencostume_path = game:GetService("Players").LocalPlayer.PlayerGui.Interface.HalloweenCostumesFrame
+
+        halloweencostume_path.Visible = true
+        halloweencostume_path.Active = true
+    end,
+})
+
+local chrisSection = ExtrasTab:CreateSection("Christmas:")
+
+local santamenuButton = ExtrasTab:CreateButton({
+    Name = "Santa Sack Menu",
+    Callback = function()
+        local santasack_path = game:GetService("Players").LocalPlayer.PlayerGui.Interface.SantaSack
+
+        santasack_path.Visible = true
+        santasack_path.Active = true
+    end,
+})
 local creditstablabel1 = CREDITS:CreateLabel("Developer: 4NTHOcyan", 0)
 local creditstablabel2 = CREDITS:CreateLabel("Find all my game menus on  Discord.gg/cWhpEDYPUB", 0)
 local creditstablabel3 = CREDITS:CreateLabel("or  rscripts.net/@4NTHOcyan", 0)
 local creditstablabel4 = CREDITS:CreateLabel("-----", 0)
 local creditstablabel5 = CREDITS:CreateLabel("Thanks for using Cyan-99! All of your support is helpful and appreciated.", 0)
-local creditstablabel6 = CREDITS:CreateLabel("Salamat sa paggamit ng Cyan-99! Malaking tulong at lubos ang inyong suporta.", 0)
-local creditstablabel7 = CREDITS:CreateLabel("Cyan-99를 이용해 주셔서 감사합니다! 여러분의 모든 지원에 진심으로 감사드립니다.", 0)
-local creditstablabel8 = CREDITS:CreateLabel("¡Gracias por usar Cyan-99! Agradecemos todo su apoyo.", 0)
-local creditstablabel9 = CREDITS:CreateLabel("Спасибо за использование Cyan-99! Ваша поддержка очень полезна и ценна.", 0)
-
 end
