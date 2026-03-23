@@ -5,7 +5,7 @@ if game.PlaceId == place_id or game.PlaceId == party_placeid then
 
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
-local _Version = "Cyan-99 v1.2a"
+local _Version = "Cyan-99 v1.2e"
 
 local Window = Rayfield:CreateWindow({
    Name = _Version,
@@ -127,13 +127,14 @@ Rayfield:Notify({
     Image = "file-heart",
 })
 
+local LibTab = Window:CreateTab("", "library") -- Title, Image
 local MainTab = Window:CreateTab("Main", "blend") -- Title, Image
 local BringTab = Window:CreateTab("Bring", "briefcase") -- Title, Image
 local MoveTab = Window:CreateTab("Teleport", "move") -- Title, Image
 local TreeTab = Window:CreateTab("Trees", "trees")
 local ChestTab = Window:CreateTab("Chests", "package") -- Title, Image
 local SkullTab = Window:CreateTab("Skulls", "skull") -- Title, Image
-local BaseTab = Window:CreateTab("Skybase", "baseline")
+local BaseTab = Window:CreateTab("Base", "baseline")
 local ExtrasTab = Window:CreateTab("Extras", "star")
 local CREDITS = Window:CreateTab("Credits", "users") -- Title, Image
 
@@ -145,6 +146,74 @@ scr_bench_init_.RequiresLineOfSight = false
 task.wait()
 fireproximityprompt(scr_bench_init_)
 task.wait()
+
+--// create Lib tab -- information & misc.
+local libsection1 = LibTab:CreateSection("Hello!")
+
+local welcomeLabel = LibTab:CreateLabel("Welcome "..player.DisplayName.."!", "activity")
+
+local libsection1 = LibTab:CreateSection("Quests (beta):")
+
+local quest_att = player:GetAttributes()
+
+for ident, questt in pairs(quest_att) do
+    --print(tostring(ident).." - "..tostring(questt))
+    --ident = tostring(ident)
+    --print(type(ident))
+    --print(type(questt))
+    if ident == "TrackedQuest1" then
+        local q1Label = LibTab:CreateLabel(questt, "diamond") 
+    end
+    if ident == "TrackedQuest2" then
+        local q2Label = LibTab:CreateLabel(questt, "diamond")
+    end
+    if ident == "TrackedQuest3" then
+        local q3Label = LibTab:CreateLabel(questt, "diamond")
+    end
+
+end
+
+-- tips and tricks
+
+-- stronghold timer
+local SHsection1 = LibTab:CreateSection("Misc:")
+
+local SHtimerLabel = LibTab:CreateLabel("Stronghold: not found", "timer")
+task.spawn(function()
+    while true do
+        if stronghold_loc:FindFirstChild("Stronghold") then
+
+            local sh_display_time = workspace.Map.Landmarks.Stronghold.Functional:WaitForChild("Sign").SurfaceGui.Frame.Body.Text
+            --print(sh_display_time)
+            local formattedTime = string.format("Stronghold Time: %s", sh_display_time)
+            SHtimerLabel:Set(formattedTime, "timer")
+            task.wait(0.5)
+
+        end
+        task.wait(0.5)
+        --print("sh not found")
+    end
+end)
+
+local world_attributes = workspace:GetAttributes()
+
+for id, attr in pairs(world_attributes) do
+
+    if id == "Biome" then
+
+        local defBiomeLabel = LibTab:CreateLabel("Biome: "..attr, "globe")
+
+    end
+
+    if id == "SelectedEvent" then
+
+        local defFlameLabel = LibTab:CreateLabel("Default Flame: "..attr, "globe")
+
+    end
+
+end
+
+local miscMoreLabel = LibTab:CreateLabel("More Coming Soon!", 0)
 
 --// create main tab 
 
@@ -758,24 +827,7 @@ local Toggle = MainTab:CreateToggle({
 })
 
 --
---task.spawn(function()
---    while true do
---        if stronghold_loc:FindFirstChild("Stronghold") then
---
---            task.wait(1)
---            local sh_display_time = workspace.Map.Landmarks.Stronghold.Functional.Sign.SurfaceGui.Frame.Body.Text
---            print(sh_display_time)
---            local formattedTime = string.format("Stronghold Time: %q", sh_display_time)
---            if not sh_display_time then
---                break
---            end
---        end
---        task.wait()
---        strongholdtablabel1:Set(tostring(formattedTime))
---    end
---end)
 
---pcall(sHtimer)
 
 --// Create Move teleport Tab
 
@@ -2692,7 +2744,7 @@ local skulltab_label_locals = {
 skulltab_label_locals.Label = SkullTab:CreateLabel("Opens the Jungle Temple every 5-6 minutes")
 skulltab_label_locals.Label2 = SkullTab:CreateLabel(" --- Max Fire Recommended --- ")
 skulltab_label_locals.Label3 = SkullTab:CreateLabel(" --- Didn't work? Try teleporting to the temple first --- ")
-skulltab_label_locals.Paragraph = SkullTab:CreateParagraph({Title = "Important Notice", Content = "You must have atleast 3-4 skulls on the ground somewhere NOT in your sack. Do not interact with the crystal skulls. If you experience issues turn toggle to OFF and wait 6-7 minutes for the cycle to refresh."})
+skulltab_label_locals.Paragraph = SkullTab:CreateParagraph({Title = "Important Notice", Content = "You must have atleast 3-4 skulls on the ground somewhere NOT in your sack. Do not interact with the crystal skulls."})
 
 local function create_exp_UI()
 
@@ -3080,6 +3132,65 @@ end
 local UICorner_18 = Instance.new("UICorner",TextButtonBACK)
 end
 
+local main_base_locals = {
+    "",
+}
+
+local baseSection21 = BaseTab:CreateSection("Base:")
+
+local walls_index
+
+local baseRadiusSlider = BaseTab:CreateSlider({
+    Name = "Walls",
+    Range = {40, 70},
+    Increment = 5,
+    Suffix = " Blueprints",
+    CurrentValue = 40,
+    Flag = "Slider1", -- A flag is the identifier for the configuration file; make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+    Callback = function(Value)
+        walls_index = Value
+    end,
+})
+
+local univ_vector = Vector3.new(0, 0.65, 0)
+local univ_cframe = CFrame.new(0, 0.65, 0)
+
+local logwallsCIRCLEButton = BaseTab:CreateButton({
+    Name = "[Circle] Auto Place Log Walls",
+    Callback = function()
+        for i = 1, walls_index do
+
+            task.wait()
+            print(tostring(i))
+
+            local radius = walls_index
+
+            local angle = i * (math.pi * 2) / walls_index
+
+            local x = univ_vector.X + radius * math.cos(angle)
+            local z = univ_vector.Z + radius * math.sin(angle)
+
+            local xc = univ_cframe.X + radius * math.cos(angle)
+            local xz = univ_cframe.Z + radius * math.sin(angle)
+
+            local args = {
+                game:GetService("Players").LocalPlayer.Inventory:FindFirstChild("Log Wall Blueprint"),
+            {
+                Valid = true,
+                CFrame = CFrame.lookAt(vector.create(x, univ_vector.Y, z), Vector3.new(0,0,0)),--* CFrame.Angles(0, math.rad(90), 0)),
+                Position = vector.create(x, univ_vector.Y, z)
+            },
+                CFrame.lookAt(vector.create(x, univ_vector.Y, z), Vector3.new(0,0,0)) -- CFrame.new(xc, univ_cframe.Y, xz) * CFrame.Angles(0, math.rad(90) - 40, 0)
+            }
+            game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("RequestPlaceStructure"):InvokeServer(unpack(args))
+
+
+        end
+    end,
+})
+local descriptlogwallblueprintParagraph = BaseTab:CreateParagraph({Title = "Note:", Content = "Placement is based on the number of Log Wall Blueprints you have.\n40 Walls ~ 75 studs radius\n70 Walls ~ 130 studs radius (MAX)\nTorches are not necessary."})
+
+local baseSection21 = BaseTab:CreateSection("(New!) SkyBase:")
 create_exp_UI()
 task.wait()
 local _interface = game.Players.LocalPlayer.PlayerGui.Interface_i
@@ -3661,6 +3772,7 @@ local creditstab_locals = {cred_label1 = "creditlabel1",
     cred_label6 = "creditlabel6",
     cred_label7 = "creditlabel7",
     cred_label8 = "creditlabel8",
+    cred_label9 = "creditlabel9",
 }
 creditstab_locals.cred_label1 = CREDITS:CreateLabel("Developer: 4NTHOcyan", 0)
 creditstab_locals.cred_label2 = CREDITS:CreateLabel("Find all my game menus on  Discord.gg/cWhpEDYPUB", 0)
@@ -3670,4 +3782,6 @@ creditstab_locals.cred_label5 = CREDITS:CreateLabel("Thanks for using Cyan-99! A
 creditstab_locals.cred_label6 = CREDITS:CreateLabel("¡Gracias por usar Cyan-99! Todo su apoyo es útil y muy apreciado.", 0)
 creditstab_locals.cred_label7 = CREDITS:CreateLabel("Cyan-99를 이용해 주셔서 감사합니다! 여러분의 모든 성원은 큰 도움이 되며, 깊이 감사드립니다.", 0)
 creditstab_locals.cred_label8 = CREDITS:CreateLabel("Salamat sa paggamit ng Cyan-99! Malaking tulong at lubos ang inyong suporta.", 0)
+creditstab_locals.cred_label9 = CREDITS:CreateParagraph({Title = "Legal Notice:", Content ="THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."})
+
 end
