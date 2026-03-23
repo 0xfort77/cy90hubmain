@@ -204,14 +204,25 @@ for id, attr in pairs(world_attributes) do
         local defBiomeLabel = LibTab:CreateLabel("Biome: "..attr, "globe")
 
     end
-
-    if id == "SelectedEvent" then
-
-        local defFlameLabel = LibTab:CreateLabel("Default Flame: "..attr, "globe")
-
-    end
-
 end
+
+local defFlameLabel = LibTab:CreateLabel("Flame Event: waiting...", "globe")
+
+task.spawn(function()
+    while true do
+        local upd_wrld_att = workspace:GetAttributes()
+        for f_id, event in pairs(upd_wrld_att) do
+
+            if f_id == "SelectedEvent" then
+                defFlameLabel:Set("Flame Event: "..event, "globe")
+                task.wait(5.555)
+            end
+
+        end
+        task.wait(0.66)
+        --print("flame not found")
+    end
+end)
 
 local miscMoreLabel = LibTab:CreateLabel("More Coming Soon!", 0)
 
