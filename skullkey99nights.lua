@@ -5,7 +5,7 @@ if game.PlaceId == place_id or game.PlaceId == party_placeid then
 
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
-local _Version = "Cyan-99 v1.2e"
+local _Version = "Cyan-99 v1.2e1"
 
 local Window = Rayfield:CreateWindow({
    Name = _Version,
@@ -183,7 +183,7 @@ task.spawn(function()
     while true do
         if stronghold_loc:FindFirstChild("Stronghold") then
 
-            local sh_display_time = workspace.Map.Landmarks.Stronghold.Functional:WaitForChild("Sign").SurfaceGui.Frame.Body.Text
+            local sh_display_time = workspace.Map.Landmarks.Stronghold:WaitForChild("Functional"):WaitForChild("Sign").SurfaceGui.Frame.Body.Text
             --print(sh_display_time)
             local formattedTime = string.format("Stronghold Time: %s", sh_display_time)
             SHtimerLabel:Set(formattedTime, "timer")
@@ -3163,8 +3163,8 @@ local baseRadiusSlider = BaseTab:CreateSlider({
     end,
 })
 
-local univ_vector = Vector3.new(0, 0.65, 0)
-local univ_cframe = CFrame.new(0, 0.65, 0)
+local univ_vector = Vector3.new(0, 0.45, 0)
+local univ_cframe = CFrame.new(0, 0.45, 0)
 
 local logwallsCIRCLEButton = BaseTab:CreateButton({
     Name = "[Circle] Auto Place Log Walls",
