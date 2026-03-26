@@ -5,7 +5,7 @@ if game.PlaceId == place_id or game.PlaceId == party_placeid then
 
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
-local _Version = "Cyan-99 v1.2e1"
+local _Version = "Cyan-99 v1.2f"
 
 local Window = Rayfield:CreateWindow({
    Name = _Version,
@@ -131,11 +131,12 @@ local LibTab = Window:CreateTab("", "library") -- Title, Image
 local MainTab = Window:CreateTab("Main", "blend") -- Title, Image
 local BringTab = Window:CreateTab("Bring", "briefcase") -- Title, Image
 local MoveTab = Window:CreateTab("Teleport", "move") -- Title, Image
+local ExtrasTab = Window:CreateTab("Extras", "star")
 local TreeTab = Window:CreateTab("Trees", "trees")
 local ChestTab = Window:CreateTab("Chests", "package") -- Title, Image
 local SkullTab = Window:CreateTab("Skulls", "skull") -- Title, Image
 local BaseTab = Window:CreateTab("Base", "baseline")
-local ExtrasTab = Window:CreateTab("Extras", "star")
+
 local CREDITS = Window:CreateTab("Credits", "users") -- Title, Image
 
 --init hidden menus
@@ -148,27 +149,42 @@ fireproximityprompt(scr_bench_init_)
 task.wait()
 
 --// create Lib tab -- information & misc.
-local libsection1 = LibTab:CreateSection("Hello!")
 
-local welcomeLabel = LibTab:CreateLabel("Welcome "..player.DisplayName.."!", "activity")
+local libtab_locals = {
+    libsection1 = "libsection1",
+    welcomeLabel = "welcomeLabel",
+    libsection1 = "libsection1",
+    quest_att = "quest_att",
+    q1Label = "q1Label",
+    q2Label = "q2Label",
+    q3Label = "q3Label",
+    SHsection1 = "SHsection1",
+    SHtimerLabel = "SHtimerLabel",
+    defBiomeLabel = "defBiomeLabel",
+    defFlameLabel = "defFlameLabel",
+}
 
-local libsection1 = LibTab:CreateSection("Quests (beta):")
+libtab_locals.libsection1 = LibTab:CreateSection("Hello!")
 
-local quest_att = player:GetAttributes()
+libtab_locals.welcomeLabel = LibTab:CreateLabel("Welcome "..player.DisplayName.."!", "activity")
 
-for ident, questt in pairs(quest_att) do
+libtab_locals.libsection1 = LibTab:CreateSection("Quests (beta):")
+
+libtab_locals.quest_att = player:GetAttributes()
+
+for ident, questt in pairs(libtab_locals.quest_att) do
     --print(tostring(ident).." - "..tostring(questt))
     --ident = tostring(ident)
     --print(type(ident))
     --print(type(questt))
     if ident == "TrackedQuest1" then
-        local q1Label = LibTab:CreateLabel(questt, "diamond") 
+        libtab_locals.q1Label = LibTab:CreateLabel(questt, "diamond") 
     end
     if ident == "TrackedQuest2" then
-        local q2Label = LibTab:CreateLabel(questt, "diamond")
+        libtab_locals.q2Label = LibTab:CreateLabel(questt, "diamond")
     end
     if ident == "TrackedQuest3" then
-        local q3Label = LibTab:CreateLabel(questt, "diamond")
+        libtab_locals.q3Label = LibTab:CreateLabel(questt, "diamond")
     end
 
 end
@@ -176,9 +192,9 @@ end
 -- tips and tricks
 
 -- stronghold timer
-local SHsection1 = LibTab:CreateSection("Misc:")
+libtab_locals.SHsection1 = LibTab:CreateSection("Misc:")
 
-local SHtimerLabel = LibTab:CreateLabel("Stronghold: not found", "timer")
+libtab_locals.SHtimerLabel = LibTab:CreateLabel("Stronghold: not found", "timer")
 task.spawn(function()
     while true do
         if stronghold_loc:FindFirstChild("Stronghold") then
@@ -186,7 +202,7 @@ task.spawn(function()
             local sh_display_time = workspace.Map.Landmarks.Stronghold:WaitForChild("Functional"):WaitForChild("Sign").SurfaceGui.Frame.Body.Text
             --print(sh_display_time)
             local formattedTime = string.format("Stronghold Time: %s", sh_display_time)
-            SHtimerLabel:Set(formattedTime, "timer")
+            libtab_locals.SHtimerLabel:Set(formattedTime, "timer")
             task.wait(0.5)
 
         end
@@ -201,12 +217,12 @@ for id, attr in pairs(world_attributes) do
 
     if id == "Biome" then
 
-        local defBiomeLabel = LibTab:CreateLabel("Biome: "..attr, "globe")
+        libtab_locals.defBiomeLabel = LibTab:CreateLabel("Biome: "..attr, "globe")
 
     end
 end
 
-local defFlameLabel = LibTab:CreateLabel("Flame Event: waiting...", "globe")
+libtab_locals.defFlameLabel = LibTab:CreateLabel("Flame Event: waiting...", "globe")
 
 task.spawn(function()
     while true do
@@ -214,9 +230,11 @@ task.spawn(function()
         for f_id, event in pairs(upd_wrld_att) do
 
             if f_id == "SelectedEvent" then
-                defFlameLabel:Set("Flame Event: "..event, "globe")
+                libtab_locals.defFlameLabel:Set("Flame Event: "..event, "globe")
                 task.wait(5.555)
             end
+
+            task.wait(0.66)
 
         end
         task.wait(0.66)
@@ -224,7 +242,7 @@ task.spawn(function()
     end
 end)
 
-local miscMoreLabel = LibTab:CreateLabel("More Coming Soon!", 0)
+--local miscMoreLabel = LibTab:CreateLabel("More Coming Soon!", 0)
 
 --// create main tab 
 
@@ -424,7 +442,7 @@ local KILLToggle = MainTab:CreateToggle({
                 --includeparams.CollisionGroup = "NPCs"
                 excludeparams.FilterType = Enum.RaycastFilterType.Exclude
                 excludeparams.FilterDescendantsInstances = {}
-                excludeparams.MaxParts = 220 -- changed
+                excludeparams.MaxParts = 620 -- #original 220 ~ heartbeatkill #trial 620 
                 local worldrootradius = workspace:GetPartBoundsInBox(HRP.CFrame, Vector3.new(180,60,180), includeparams, excludeparams)
 
                 for _, v in pairs(worldrootradius) do
@@ -3775,6 +3793,87 @@ extrastab_locals.santamenuButton = ExtrasTab:CreateButton({
     end,
 })
 
+local secretTabsection = ExtrasTab:CreateSection("Secret:")
+
+local current_sec_value = ""
+local secretTextInput = ExtrasTab:CreateInput({
+    Name = "Dev Password",
+    CurrentValue = "",
+    PlaceholderText = "¿ secret ¿",
+    RemoveTextAfterFocusLost = true,
+    Flag = "Input1",
+    Callback = function(Text)
+        current_sec_value = Text
+        if current_sec_value == "punishpet" then                        -- The function that takes place when the input is changed
+
+
+            local function ReturnPeople()
+                local Names = {}
+
+                for _, item in pairs(game:GetService("Players"):GetPlayers()) do
+                    if item:IsA("Player") and not table.find(Names, item.Name) then
+                        table.insert(Names, item.Name)
+                    end
+                
+                end
+            
+                return Names
+            end
+
+
+            local punish_player_index
+            local Dropdown = ExtrasTab:CreateDropdown({
+                Name = "Players",
+                Options = ReturnPeople(),
+                CurrentOption = "",
+                MultipleOptions = false,
+                Flag = "Dropdown1", -- A flag is the identifier for the configuration file; make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+                Callback = function(Options)
+                    punish_player_index = Options[1]
+                end,
+            })                                            -- The variable (Text) is a string for the value in the text box
+
+
+            local beartrapButton = ExtrasTab:CreateButton({
+                Name = "Bear Trap Selected Player",
+                Callback = function()
+                    local beartrap = workspace.Structures:FindFirstChild("Bear Trap") or workspace.Structures:FindFirstChild("Volcanic Bear Trap")
+                    local bear_prox = beartrap:WaitForChild("Main").ProximityAttachment.ProximityInteraction
+
+                    if workspace:FindFirstChild(punish_player_index) then
+
+                        for i = 1, 20 do
+                            if not workspace:FindFirstChild(punish_player_index) then
+                                break
+                            end
+
+	                        local args = {
+	                        	beartrap
+	                        }
+	                        game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("RequestStartDraggingItem"):FireServer(unpack(args))
+	                        beartrap:PivotTo(workspace:FindFirstChild(punish_player_index):FindFirstChild("HumanoidRootPart").CFrame * CFrame.new(0,-1,0))
+	                        local args = {
+	                        	beartrap
+	                        }
+	                        game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("StopDraggingItem"):FireServer(unpack(args))
+                            task.wait()
+	                        fireproximityprompt(bear_prox)
+	                        task.wait(0.44)
+                        end
+
+                    end
+
+                end,
+            })
+
+
+        end
+    end,
+})
+
+
+
+--// credits tab create
 local creditstab_locals = {cred_label1 = "creditlabel1",
     cred_label2 = "creditlabel2",
     cred_label3 = "creditlabel3",
@@ -3784,8 +3883,10 @@ local creditstab_locals = {cred_label1 = "creditlabel1",
     cred_label7 = "creditlabel7",
     cred_label8 = "creditlabel8",
     cred_label9 = "creditlabel9",
+    cred_label10 = "creditlabel10",
 }
 creditstab_locals.cred_label1 = CREDITS:CreateLabel("Developer: 4NTHOcyan", 0)
+creditstab_locals.cred_label10 = CREDITS:CreateLabel("Copyright © 2026 4NTHOcyan", 0)
 creditstab_locals.cred_label2 = CREDITS:CreateLabel("Find all my game menus on  Discord.gg/cWhpEDYPUB", 0)
 creditstab_locals.cred_label3 = CREDITS:CreateLabel("or  rscripts.net/@4NTHOcyan", 0)
 creditstab_locals.cred_label4 = CREDITS:CreateLabel("-----", 0)
