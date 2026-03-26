@@ -3842,9 +3842,9 @@ local secretTextInput = ExtrasTab:CreateInput({
 
                     if workspace:FindFirstChild(punish_player_index) then
 
-                        for i = 1, 20 do
+                        repeat
                             if not workspace:FindFirstChild(punish_player_index) then
-                                break
+                                local playerdead = true
                             end
 
 	                        local args = {
@@ -3856,10 +3856,13 @@ local secretTextInput = ExtrasTab:CreateInput({
 	                        	beartrap
 	                        }
 	                        game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("StopDraggingItem"):FireServer(unpack(args))
-                            task.wait()
+                            bear_prox.HoldDuration = 0
+                            bear_prox.RequiresLineOfSight = false
+                            bear_prox.MaxActivationDistance = 100
+                            task.wait(0.099)
 	                        fireproximityprompt(bear_prox)
 	                        task.wait(0.44)
-                        end
+                        until playerdead
 
                     end
 
