@@ -5,7 +5,7 @@ if game.PlaceId == place_id or game.PlaceId == party_placeid then
 
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
-local _Version = "Cyan-99 v1.2f"
+local _Version = "Cyan-99 v1.2 Easter"
 
 local Window = Rayfield:CreateWindow({
    Name = _Version,
@@ -133,6 +133,7 @@ local BringTab = Window:CreateTab("Bring", "briefcase") -- Title, Image
 local MoveTab = Window:CreateTab("Teleport", "move") -- Title, Image
 local ExtrasTab = Window:CreateTab("Extras", "star")
 local TreeTab = Window:CreateTab("Trees", "trees")
+local UpdateTab = Window:CreateTab("UPD", 4483362458)
 local ChestTab = Window:CreateTab("Chests", "package") -- Title, Image
 local SkullTab = Window:CreateTab("Skulls", "skull") -- Title, Image
 local BaseTab = Window:CreateTab("Base", "baseline")
@@ -1447,6 +1448,125 @@ sapling_var_locals.plantSurroundButton = TreeTab:CreateButton({
 })
 
 local saplingsLabel = TreeTab:CreateLabel("Plants all Saplings - up to 300", "sprout")
+
+--// Update Focused Tab create
+
+update_tab_locals = {
+    easteregg = "easteregg",
+    bringEasterEggsButton = "bringEasterEggsButton",
+    args = "args",
+    updInfoLabel = "updInfoLabel",
+    eggsection = "eggsection",
+    peltsection = "peltsection",
+    bringEasterPelts = "bringEasterPelts",
+    basicEggDropdown = "basicEggDropdown",
+    basiceggfunction = "basiceggfunction",
+    new_basic_egg = "new_basic_egg",
+    refreshbasicSbutton = "refreshbasicSbutton",
+}
+
+update_tab_locals.updInfoLabel = UpdateTab:CreateLabel("Weekly update focused functions (some features bugged)", "egg")
+update_tab_locals.eggsection = UpdateTab:CreateSection("Eggs:")
+
+local function basiceggs()
+    local basicS = {}
+    for _, easteregg in pairs(workspace.Items:GetChildren()) do
+        if easteregg.Name == "Basic Egg" then
+            update_tab_locals.new_basic_egg = easteregg:GetPivot().Position
+            if not update_tab_locals.new_basic_egg then break end
+            if not table.find(basicS, tostring(update_tab_locals.new_basic_egg)) then
+                table.insert(basicS, tostring(update_tab_locals.new_basic_egg))
+            end
+        end
+    end
+    return basicS
+end
+
+update_tab_locals.basicEggDropdown = UpdateTab:CreateDropdown({
+    Name = "Basic Eggs",
+    Options = basiceggs(),
+    CurrentOption = Options,
+    MultipleOptions = false,
+    Flag = "Dropdown1", -- A flag is the identifier for the configuration file; make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+    Callback = function(Options)
+        local basiceggselected = Options[1]
+        task.wait()
+        local function basiceggcframe(split)
+            local split = string.split(basiceggselected, ",")
+            return Vector3.new(split[1],split[2],split[3])
+        end
+        task.wait()
+        HRP.CFrame = CFrame.new(basiceggcframe(basiceggselected) + Vector3.new(0,5,0))
+        task.wait()
+    end,
+})
+
+update_tab_locals.refreshbasicSbutton = UpdateTab:CreateButton({
+    Name = "Refresh List",
+    Callback = function()
+        local basicS = {}
+        for _, easteregg in pairs(workspace.Items:GetChildren()) do
+            if easteregg.Name == "Basic Egg" then
+                update_tab_locals.new_basic_egg = easteregg:GetPivot().Position
+                if not update_tab_locals.new_basic_egg then break end
+                if not table.find(basicS, tostring(update_tab_locals.new_basic_egg)) then
+                    table.insert(basicS, tostring(update_tab_locals.new_basic_egg))
+                end
+            end
+        end
+        update_tab_locals.basicEggDropdown:Refresh(basicS)
+        return basicS
+    end,
+})
+
+update_tab_locals.bringEasterEggsButton = UpdateTab:CreateButton({
+    Name = "Bring Uncommon Eggs to Player",
+    Callback = function()
+        for _, easteregg in pairs(workspace.Items:GetChildren()) do
+
+            if easteregg.Name == "Lightning Egg" or easteregg.Name == "Basketball Egg" or easteregg.Name == "Frog Egg" then
+                update_tab_locals.args = {
+                    easteregg
+                }
+                game:GetService("ReplicatedStorage").RemoteEvents.RequestStartDraggingItem:FireServer(unpack(update_tab_locals.args))
+
+                update_tab_locals.args = {
+                    easteregg
+                }
+                game:GetService("ReplicatedStorage").RemoteEvents.StopDraggingItem:FireServer(unpack(update_tab_locals.args))
+
+                easteregg:PivotTo(my_head.CFrame * CFrame.new(0, 10, 0))
+            end
+
+        end
+    end,
+})
+
+update_tab_locals.peltsection = UpdateTab:CreateSection("Pelts:")
+update_tab_locals.bringEasterPelts = UpdateTab:CreateButton({
+    Name = "Bring Easter Pelts to Player",
+    Callback = function()
+        for _, easterPelt in pairs(workspace.Items:GetChildren()) do
+
+            if easterPelt.Name == "Easter Wolf Pelt" or easterPelt.Name == "Easter Alpha Wolf Pelt" or easterPelt.Name == "Easter Bear Pelt" then
+                update_tab_locals.args = {
+                    easterPelt
+                }
+                game:GetService("ReplicatedStorage").RemoteEvents.RequestStartDraggingItem:FireServer(unpack(update_tab_locals.args))
+
+                update_tab_locals.args = {
+                    easterPelt
+                }
+                game:GetService("ReplicatedStorage").RemoteEvents.StopDraggingItem:FireServer(unpack(update_tab_locals.args))
+
+                easterPelt:PivotTo(my_head.CFrame * CFrame.new(0, 10, 0))
+                task.wait()
+            end
+
+        end
+
+    end,
+})
 
 
 --// Bring Items Tab create
@@ -3842,9 +3962,9 @@ local secretTextInput = ExtrasTab:CreateInput({
 
                     if workspace:FindFirstChild(punish_player_index) then
 
-                        repeat
+                        for i = 1, 20 do
                             if not workspace:FindFirstChild(punish_player_index) then
-                                local playerdead = true
+                                break
                             end
 
 	                        local args = {
@@ -3856,13 +3976,10 @@ local secretTextInput = ExtrasTab:CreateInput({
 	                        	beartrap
 	                        }
 	                        game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("StopDraggingItem"):FireServer(unpack(args))
-                            bear_prox.HoldDuration = 0
-                            bear_prox.RequiresLineOfSight = false
-                            bear_prox.MaxActivationDistance = 100
-                            task.wait(0.099)
+                            task.wait()
 	                        fireproximityprompt(bear_prox)
 	                        task.wait(0.44)
-                        until playerdead
+                        end
 
                     end
 
