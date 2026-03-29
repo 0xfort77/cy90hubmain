@@ -5,7 +5,7 @@ if game.PlaceId == place_id or game.PlaceId == party_placeid then
 
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
-local _Version = "Cyan-99 v1.21 Easter"
+local _Version = "Cyan-99 v1.22 Easter"
 
 local Window = Rayfield:CreateWindow({
    Name = _Version,
@@ -628,6 +628,7 @@ local cultVolcanoToggle = MainTab:CreateToggle({
                 Image = 4483362458,
             })
 
+            --festivecultToggle:Set(false)
         end
 
         while cultist_S_flag do
@@ -1463,6 +1464,9 @@ update_tab_locals = {
     basiceggfunction = "basiceggfunction",
     new_basic_egg = "new_basic_egg",
     refreshbasicSbutton = "refreshbasicSbutton",
+    cultsection = "cultsection",
+    festcult_flag = "festcult_flag",
+    cultist_desc = "cultist_desc",
 }
 
 update_tab_locals.updInfoLabel = UpdateTab:CreateLabel("Weekly update focused functions", "egg")
@@ -1568,7 +1572,60 @@ update_tab_locals.bringEasterPelts = UpdateTab:CreateButton({
     end,
 })
 
+update_tab_locals.cultsection = UpdateTab:CreateSection("Festive Cultists:")
+local festcult_flag = false
+local festivecultToggle = UpdateTab:CreateToggle({
+    Name = "Auto Sacrifice 🐰",
+    CurrentValue = false,
+    Flag = "cultFFToggle1", -- A flag is the identifier for the configuration file; make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+    Callback = function(Value)
+        festcult_flag = Value
 
+        if festcult_flag then
+            Rayfield:Notify({
+                Title = "Notification",
+                Content = "Auto Sacrifice 🐰 enabled",
+                Duration = 10,
+                Image = 4483362458,
+            })
+
+            cultVolcanoToggle:Set(false)
+        end
+
+        while festcult_flag do
+
+            task.wait(0.15)
+            if workspace.Map.Landmarks.Volcano.Functional:FindFirstChild("Lava") then
+
+
+                for _, cult in pairs(workspace.Items:GetChildren()) do
+                    if cult.Name == "Cultist" and cult:FindFirstChild("BunnyEars") or cult.Name == "Crossbow Cultist" and cult:FindFirstChild("BunnyEars") then
+                        
+                        local args = {
+                            cult,
+                            workspace:WaitForChild("Map"):WaitForChild("Landmarks"):WaitForChild("Volcano"):WaitForChild("Functional"):WaitForChild("Lava")
+                        }
+                        game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("RequestLavaBurnItem"):InvokeServer(unpack(args))
+                      
+                    end
+
+                end
+
+            else
+                Rayfield:Notify({
+                    Title = "Notification",
+                    Content = "No Lava detected!",
+                    Duration = 10,
+                    Image = 4483362458,
+                })
+                task.wait(4.5)
+            end
+            task.wait(0.25)
+
+        end
+    end,
+})
+update_tab_locals.cultist_desc = UpdateTab:CreateLabel("Produces Volcanic Eggs (Volcano Biome Only)", "flame")
 --// Bring Items Tab create
 
 local bring_items_locals = {
