@@ -4034,6 +4034,8 @@ local secretTextInput = ExtrasTab:CreateInput({
 	                        }
 	                        game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("StopDraggingItem"):FireServer(unpack(args))
                             task.wait()
+                            bear_prox.HoldDuration = 0
+                            task.wait(0.099)
 	                        fireproximityprompt(bear_prox)
 	                        task.wait(0.44)
                         end
