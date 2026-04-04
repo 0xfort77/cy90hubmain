@@ -5,7 +5,7 @@ if game.PlaceId == place_id or game.PlaceId == party_placeid then
 
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
-local _Version = "Cyan-99 v1.22 Easter"
+local _Version = "Cyan-99 v1.22 Easter II"
 
 local Window = Rayfield:CreateWindow({
    Name = _Version,
@@ -72,6 +72,7 @@ local cultist_S_flag = false
 local auto_SH_flag = false
 local interface_flag = false
 local fishing_flag = false
+local taming_flag = false
 local recycler_flag = false
 local recycler_flag_s = false
 
@@ -131,7 +132,7 @@ local LibTab = Window:CreateTab("", "library") -- Title, Image
 local MainTab = Window:CreateTab("Main", "blend") -- Title, Image
 local BringTab = Window:CreateTab("Bring", "briefcase") -- Title, Image
 local MoveTab = Window:CreateTab("Teleport", "move") -- Title, Image
-local ExtrasTab = Window:CreateTab("Extras", "star")
+local ExtrasTab = Window:CreateTab("Menus", "star")
 local TreeTab = Window:CreateTab("Trees", "trees")
 local UpdateTab = Window:CreateTab("UPD", "rabbit")
 local ChestTab = Window:CreateTab("Chests", "package") -- Title, Image
@@ -247,11 +248,33 @@ end)
 
 --// create main tab 
 
-local mainsection1 = MainTab:CreateSection("Player:")
+local maintab_locals = {
+    mainsection1 = "mainsection1",
+    SpeedSlider = "SpeedSlider",
+    runToggle = "runToggle",
+    JumpSlider = "JumpSlider",
+    jumpToggle = "jumpToggle",
+    HealthToggle = "HealthToggle",
+    KILLToggle = "KILLToggle",
+    DaylightToggle = "DaylightToggle",
+    instaChestButton = "instaChestButton",
+    autoskipnightButton = "autoskipnightButton",
+    cultVolcanoToggle = "cultVolcanoToggle",
+    autodiamondsButton = "autodiamondsButton",
+    coinsButton = "coinsButton",
+    autoSHButton = "autoSHButton",
+    strongholdtablabel1 = "strongholdtablabel1",
+    fishingToggle = "fishingToggle",
+    tamingToggle = "tamingToggle",
+}
+
+
+
+maintab_locals.mainsection1 = MainTab:CreateSection("Player:")
 
 local speed_index
 
-local SpeedSlider = MainTab:CreateSlider({
+maintab_locals.SpeedSlider = MainTab:CreateSlider({
         Name = "Speed",
         Range = {16, 200},
         Increment = 2,
@@ -266,7 +289,7 @@ local SpeedSlider = MainTab:CreateSlider({
         end,
 })
 
-local runToggle = MainTab:CreateToggle({
+maintab_locals.runToggle = MainTab:CreateToggle({
     Name = "Enable Speed",
     CurrentValue = false,
     Flag = "runToggle1", -- A flag is the identifier for the configuration file; make sure every element has a different flag if you're using configuration saving to ensure no overlaps
@@ -309,7 +332,7 @@ local runToggle = MainTab:CreateToggle({
 
 local jump_index
 
-local JumpSlider = MainTab:CreateSlider({
+maintab_locals.JumpSlider = MainTab:CreateSlider({
     Name = "Jump",
     Range = {7, 200},
     Increment = 4,
@@ -323,7 +346,7 @@ local JumpSlider = MainTab:CreateSlider({
     end,
 })
 
-local jumpToggle = MainTab:CreateToggle({
+maintab_locals.jumpToggle = MainTab:CreateToggle({
     Name = "Enable Jump",
     CurrentValue = false,
     Flag = "jumpToggle1", -- A flag is the identifier for the configuration file; make sure every element has a different flag if you're using configuration saving to ensure no overlaps
@@ -365,7 +388,7 @@ local jumpToggle = MainTab:CreateToggle({
     end,
 })
 
-local HealthToggle = MainTab:CreateToggle({
+maintab_locals.HealthToggle = MainTab:CreateToggle({
     Name = "Invincible",
     CurrentValue = false,
     Flag = "Toggle1", -- A flag is the identifier for the configuration file; make sure every element has a different flag if you're using configuration saving to ensure no overlaps
@@ -405,7 +428,7 @@ local acceptable_weapons_table = {
     "Laser Sword",
 }
 
-local KILLToggle = MainTab:CreateToggle({
+maintab_locals.KILLToggle = MainTab:CreateToggle({
     Name = "Kill Aura",
     CurrentValue = false,
     Flag = "Toggle1", -- A flag is the identifier for the configuration file; make sure every element has a different flag if you're using configuration saving to ensure no overlaps
@@ -475,7 +498,7 @@ local KILLToggle = MainTab:CreateToggle({
 })
 local Label = MainTab:CreateLabel("Kill Aura uses your held weapon", "swords")
 local createdatmos = false
-local DaylightToggle = MainTab:CreateToggle({
+maintab_locals.DaylightToggle = MainTab:CreateToggle({
     Name = "Night Vision",
     CurrentValue = false,
     Flag = "Toggle1", -- A flag is the identifier for the configuration file; make sure every element has a different flag if you're using configuration saving to ensure no overlaps
@@ -523,7 +546,7 @@ local DaylightToggle = MainTab:CreateToggle({
 
 })
 
-local instaChestButton = MainTab:CreateToggle({
+maintab_locals.instaChestButton = MainTab:CreateToggle({
     Name = "Instant-Open Chests",
     CurrentValue = false,
     Callback = function(Value)
@@ -574,7 +597,7 @@ local day_timer = game:GetService("Players").LocalPlayer.PlayerGui.Interface.Top
 local sun_pic = game:GetService("Players").LocalPlayer.PlayerGui.Interface.TopRight.Frame.SunDial.RainLabel.Image
 local day_tell = game:GetService("Lighting").Brightness -- 2.5 for night, 1 for day
 
-local autoskipnightButton = MainTab:CreateToggle({
+maintab_locals.autoskipnightButton = MainTab:CreateToggle({
     Name = "Auto-Skip Nights",
     CurrentValue = false,
     Callback = function(Value) 
@@ -613,7 +636,7 @@ local autoskipnightButton = MainTab:CreateToggle({
 
 })
 
-local cultVolcanoToggle = MainTab:CreateToggle({
+maintab_locals.cultVolcanoToggle = MainTab:CreateToggle({
     Name = "Auto Sacrifice 🌋",
     CurrentValue = false,
     Flag = "cultToggle1", -- A flag is the identifier for the configuration file; make sure every element has a different flag if you're using configuration saving to ensure no overlaps
@@ -666,7 +689,7 @@ local cultVolcanoToggle = MainTab:CreateToggle({
 
 -- workspace.Map.Landmarks.Stronghold.Functional.Sign.SurfaceGui.Frame.Body.Text
 
-local autodiamondsButton = MainTab:CreateToggle({
+maintab_locals.autodiamondsButton = MainTab:CreateToggle({
     Name = "Auto Pick up Diamonds",
     CurrentValue = false,
     Callback = function(Value) 
@@ -699,7 +722,7 @@ local autodiamondsButton = MainTab:CreateToggle({
 
 })
 
-local coinsButton = MainTab:CreateButton({
+maintab_locals.coinsButton = MainTab:CreateButton({
     Name = "Collect All Coins",
     Callback = function()
         Rayfield:Notify({
@@ -724,7 +747,7 @@ local coinsButton = MainTab:CreateButton({
     end,
 })
 
-local autoSHButton = MainTab:CreateToggle({ -- workspace.Map.Landmarks.Stronghold.Functional.FinalGate.Main CFrame Y changes when done **
+maintab_locals.autoSHButton = MainTab:CreateToggle({ -- workspace.Map.Landmarks.Stronghold.Functional.FinalGate.Main CFrame Y changes when done **
     Name = "Auto Stronghold",
     CurrentValue = false,
     Callback = function(Value) 
@@ -822,15 +845,15 @@ local autoSHButton = MainTab:CreateToggle({ -- workspace.Map.Landmarks.Stronghol
     end,
 })
 
-local strongholdtablabel1 = MainTab:CreateLabel("Player will teleport around to ensure initiation", "rss")
+maintab_locals.strongholdtablabel1 = MainTab:CreateLabel("Player will teleport around to ensure initiation", "rss")
 
 local fishSuccessArea = game:GetService("Players").LocalPlayer.PlayerGui.Interface.FishingCatchFrame.TimingBar.SuccessArea
 
 local UICorner_F = Instance.new("UICorner",fishSuccessArea)
 UICorner_F.CornerRadius = UDim.new(0, 20)
 
-local Toggle = MainTab:CreateToggle({
-    Name = "Easy Fishing",
+maintab_locals.fishingToggle = MainTab:CreateToggle({
+    Name = "Easy Fishing 🎣",
     CurrentValue = false,
     Flag = "Toggle1", -- A flag is the identifier for the configuration file; make sure every element has a different flag if you're using configuration saving to ensure no overlaps
     Callback = function(Value)
@@ -850,6 +873,38 @@ local Toggle = MainTab:CreateToggle({
             task.wait()
             fishSuccessArea.Position = UDim2.new(0.5, 0, 1.19999996e-07, 0)
             fishSuccessArea.Size = UDim2.new(1, 0, 1, 0)
+            task.wait()
+
+        end
+
+    end,
+})
+
+local tamingsuccessArea = game:GetService("Players").LocalPlayer.PlayerGui.Interface.TamingFluteFrame.TimingBar.SuccessArea
+local UICorner_T = Instance.new("UICorner",tamingsuccessArea)
+UICorner_T.CornerRadius = UDim.new(0, 20)
+
+maintab_locals.tamingToggle = MainTab:CreateToggle({
+    Name = "Easy Taming 🐾",
+    CurrentValue = false,
+    Flag = "Toggle1", -- A flag is the identifier for the configuration file; make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+    Callback = function(Value)
+        taming_flag = Value
+
+        if taming_flag then
+            Rayfield:Notify({
+                Title = "Notification",
+                Content = "Easy Taming enabled",
+                Duration = 10,
+                Image = 4483362458,
+            })
+        end
+
+        while taming_flag do
+
+            task.wait()
+            tamingsuccessArea.Position = UDim2.new(0.5, 0, 0, 0)
+            tamingsuccessArea.Size = UDim2.new(1, 0, 1, 0)
             task.wait()
 
         end
@@ -1467,6 +1522,9 @@ update_tab_locals = {
     cultsection = "cultsection",
     festcult_flag = "festcult_flag",
     cultist_desc = "cultist_desc",
+    eggsafehouseButton = "eggsafehouseButton",
+    carrotsection = "carrotsection",
+    bringtheCarrotsButton = "bringtheCarrotsButton",
 }
 
 update_tab_locals.updInfoLabel = UpdateTab:CreateLabel("Weekly update focused functions", "egg")
@@ -1528,7 +1586,7 @@ update_tab_locals.bringEasterEggsButton = UpdateTab:CreateButton({
     Callback = function()
         for _, easteregg in pairs(workspace.Items:GetChildren()) do
 
-            if easteregg.Name == "Lightning Egg" or easteregg.Name == "Basketball Egg" or easteregg.Name == "Frog Egg" then
+            if easteregg.Name == "Lightning Egg" or easteregg.Name == "Basketball Egg" or easteregg.Name == "Frog Egg" or easteregg.Name == "Firefly Egg" then
                 update_tab_locals.args = {
                     easteregg
                 }
@@ -1542,6 +1600,59 @@ update_tab_locals.bringEasterEggsButton = UpdateTab:CreateButton({
                 easteregg:PivotTo(my_head.CFrame * CFrame.new(0, 10, 0))
             end
 
+        end
+    end,
+})
+
+update_tab_locals.eggsafehouseButton = UpdateTab:CreateButton({
+    Name = "Teleport to Bunny's Safehouse",
+    Callback = function()
+        if workspace.Map.Landmarks:FindFirstChild("Easter Bunny's Safe") then
+            if workspace.Map.Landmarks:FindFirstChild("Easter Bunny's Safe").Pedestal:FindFirstChild("Top") then
+
+                HRP.CFrame = workspace.Map.Landmarks:FindFirstChild("Easter Bunny's Safe").Pedestal:FindFirstChild("Top").CFrame * CFrame.new(0,40,0)
+
+                task.wait()
+
+            else
+                Rayfield:Notify({
+                    Title = "Notification",
+                    Content = "No Easter Bunny Safehouse detected",
+                    Duration = 8,
+                    Image = 4483362458,
+                })
+            end
+        else
+            Rayfield:Notify({
+                Title = "Notification",
+                Content = "No Easter Bunny Safehouse detected",
+                Duration = 8,
+                Image = 4483362458,
+            })
+        end
+    end,
+})
+
+update_tab_locals.carrotsection = UpdateTab:CreateSection("Carrots:")
+
+update_tab_locals.bringtheCarrotsButton = UpdateTab:CreateButton({
+    Name = "Bring Carrots to Player",
+    Callback = function()
+        for _, carrot in pairs(workspace.Items:GetChildren()) do
+
+            if carrot.Name == "Carrot" then
+                local args = {
+                    carrot
+                }
+                game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("RequestStartDraggingItem"):FireServer(unpack(args))
+
+                local args = {
+                    carrot
+                }
+                game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("StopDraggingItem"):FireServer(unpack(args))
+
+                carrot:PivotTo(my_head.CFrame * CFrame.new(0, 10, 0))
+            end   
         end
     end,
 })
@@ -1589,7 +1700,7 @@ local festivecultToggle = UpdateTab:CreateToggle({
                 Image = 4483362458,
             })
 
-            cultVolcanoToggle:Set(false)
+            maintab_locals.cultVolcanoToggle:Set(false)
         end
 
         while festcult_flag do
@@ -2346,7 +2457,7 @@ local meatsncakeButton = BringTab:CreateButton({
         if bring_index == "Player" then
             for _, food_item in pairs(workspace.Items:GetChildren()) do
 
-                if food_item.Name == "Steak" or food_item.Name == "Morsel" or food_item.Name == "Cake" then
+                if food_item.Name == "Steak" or food_item.Name == "Morsel" or food_item.Name == "Cake" or food_item.Name == "Cooked Morsel" or food_item.Name == "Cooked Steak" then
                     bring_items_locals.args = {
                         food_item
                     }
@@ -2365,7 +2476,7 @@ local meatsncakeButton = BringTab:CreateButton({
         elseif bring_index == "Scrapper" then
             for _, food_item in pairs(workspace.Items:GetChildren()) do
 
-                if food_item.Name == "Steak" or food_item.Name == "Morsel" or food_item.Name == "Cake" then
+                if food_item.Name == "Steak" or food_item.Name == "Morsel" or food_item.Name == "Cake" or food_item.Name == "Cooked Morsel" or food_item.Name == "Cooked Steak" then
                     bring_items_locals.args = {
                         food_item
                     }
@@ -2383,7 +2494,7 @@ local meatsncakeButton = BringTab:CreateButton({
         elseif bring_index == "Fire" then
             for _, food_item in pairs(workspace.Items:GetChildren()) do
 
-                if food_item.Name == "Steak" or food_item.Name == "Morsel" or food_item.Name == "Cake" then
+                if food_item.Name == "Steak" or food_item.Name == "Morsel" or food_item.Name == "Cake" or food_item.Name == "Cooked Morsel" or food_item.Name == "Cooked Steak" then
                     bring_items_locals.args = {
                         food_item
                     }
