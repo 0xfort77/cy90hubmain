@@ -5,7 +5,7 @@ if game.PlaceId == place_id or game.PlaceId == party_placeid then
 
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
-local _Version = "Cyan-99 v1.22i"
+local _Version = "Cyan-99 v1.23w"
 
 local Window = Rayfield:CreateWindow({
    Name = _Version,
@@ -1154,6 +1154,134 @@ local Cave1Button = MoveTab:CreateButton({
         end
     end,
 })
+
+local waypontsection = MoveTab:CreateSection("Custom Waypoints:") --// Waypoints
+
+
+local HRP_table = {
+    HRP0 = "nil",
+    HRP1 = "nil",
+    HRP2 = "nil",
+    HRP3 = "nil",
+}
+
+local travelwaypointButton1 = MoveTab:CreateButton({
+    Name = "[1] Not Ready!",
+    Callback = function()
+        for key, value in pairs(HRP_table) do
+            if key == "HRP1" then
+                if value == "nil" then
+                    Rayfield:Notify({
+                        Title = "Notification",
+                        Content = "No waypoint set!",
+                        Duration = 10,
+                        Image = 4483362458,
+                    })
+
+                else
+                    HRP.CFrame = value
+                    Rayfield:Notify({
+                        Title = "Notification",
+                        Content = "Going to Waypoint 1",
+                        Duration = 10,
+                        Image = 4483362458,
+                    })
+                end
+                
+            end
+        end
+
+    end,
+})
+
+local setwaypointButton1 = MoveTab:CreateButton({
+    Name = "[1] Store Waypoint",
+    Callback = function()
+        local set_hrp_cord = HRP.CFrame
+        HRP_table["HRP1"] = set_hrp_cord
+
+        travelwaypointButton1:Set("⏩ Waypoint 1")
+    end,
+})
+
+local travelwaypointButton2 = MoveTab:CreateButton({
+    Name = "[2] Not Ready!",
+    Callback = function()
+        for key, value in pairs(HRP_table) do
+            if key == "HRP2" then
+                if value == "nil" then
+                    Rayfield:Notify({
+                        Title = "Notification",
+                        Content = "No waypoint set!",
+                        Duration = 10,
+                        Image = 4483362458,
+                    })
+
+                else
+                    HRP.CFrame = value
+                    Rayfield:Notify({
+                        Title = "Notification",
+                        Content = "Going to Waypoint 2",
+                        Duration = 10,
+                        Image = 4483362458,
+                    })
+                end
+                
+            end
+        end
+
+    end,
+})
+
+local setwaypointButton2 = MoveTab:CreateButton({
+    Name = "[2] Store Waypoint",
+    Callback = function()
+        local set_hrp_cord = HRP.CFrame
+        HRP_table["HRP2"] = set_hrp_cord
+
+        travelwaypointButton2:Set("⏩ Waypoint 2")
+    end,
+})
+
+local travelwaypointButton3 = MoveTab:CreateButton({
+    Name = "[3] Not Ready!",
+    Callback = function()
+        for key, value in pairs(HRP_table) do
+            if key == "HRP3" then
+                if value == "nil" then
+                    Rayfield:Notify({
+                        Title = "Notification",
+                        Content = "No waypoint set!",
+                        Duration = 10,
+                        Image = 4483362458,
+                    })
+
+                else
+                    HRP.CFrame = value
+                    Rayfield:Notify({
+                        Title = "Notification",
+                        Content = "Going to Waypoint 3",
+                        Duration = 10,
+                        Image = 4483362458,
+                    })
+                end
+                
+            end
+        end
+
+    end,
+})
+
+local setwaypointButton3 = MoveTab:CreateButton({
+    Name = "[3] Store Waypoint",
+    Callback = function()
+        local set_hrp_cord = HRP.CFrame
+        HRP_table["HRP3"] = set_hrp_cord
+
+        travelwaypointButton3:Set("⏩ Waypoint 3")
+    end,
+})
+
 
 local movesection2 = MoveTab:CreateSection("Lost Children:") --// CHILDREN
 
