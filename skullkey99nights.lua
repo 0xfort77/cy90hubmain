@@ -5,7 +5,7 @@ if game.PlaceId == place_id or game.PlaceId == party_placeid then
 
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
-local _Version = "Cyan-99 v1.23w"
+local _Version = "Cyan-99 v1.24"
 
 local Window = Rayfield:CreateWindow({
    Name = _Version,
@@ -161,6 +161,7 @@ local libtab_locals = {
     q2Label = "q2Label",
     q3Label = "q3Label",
     SHsection1 = "SHsection1",
+    shady_salesman = "shady_salesman",
     SHtimerLabel = "SHtimerLabel",
     defBiomeLabel = "defBiomeLabel",
     defFlameLabel = "defFlameLabel",
@@ -195,6 +196,20 @@ end
 
 -- stronghold timer
 libtab_locals.SHsection1 = LibTab:CreateSection("Misc:")
+
+libtab_locals.shady_salesman = LibTab:CreateLabel("Sketchy Salesman: ❌", "ghost")
+task.spawn(function()
+    while true do
+        if workspace.Characters:FindFirstChild("Sketchy Salesman") then
+
+            libtab_locals.shady_salesman:Set("Sketchy Salesman: ✅", "ghost")
+        else
+            
+            libtab_locals.shady_salesman:Set("Sketchy Salesman: ❌", "ghost")
+        end
+        task.wait(1.1111)
+    end
+end)
 
 libtab_locals.SHtimerLabel = LibTab:CreateLabel("Stronghold: not found", "timer")
 task.spawn(function()
@@ -1001,6 +1016,26 @@ local SHButton = MoveTab:CreateButton({
                 Image = 4483362458,
             })
         end
+    end,
+})
+
+local ShadysalesmanButton = MoveTab:CreateButton({
+    Name = "Sketchy Salesman",
+    Callback = function()
+
+        if workspace.Characters:FindFirstChild("Sketchy Salesman") then
+            task.wait()
+            HRP.CFrame = workspace.Characters:FindFirstChild("Sketchy Salesman"):FindFirstChild("Head").CFrame * CFrame.new(0,6,0)
+        
+        else
+            Rayfield:Notify({
+                Title = "Notification",
+                Content = "No Salesman detected",
+                Duration = 10,
+                Image = 4483362458,
+            })
+        end
+
     end,
 })
 
