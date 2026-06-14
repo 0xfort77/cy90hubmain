@@ -5,7 +5,7 @@ if game.PlaceId == place_id or game.PlaceId == party_placeid then
 
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
-local _Version = "Cyan-99 v1.25"
+local _Version = "Cyan-99 v1.26.1f"
 
 local Window = Rayfield:CreateWindow({
    Name = _Version,
@@ -124,19 +124,26 @@ Rayfield:Notify({
 Rayfield:Notify({
     Title = "Welcome!",
     Content = "Thanks for using CyanHub by 4NTHOcyan",
-    Duration = 6.5,
+    Duration = 12,
     Image = "file-heart",
 })
 
-local LibTab = Window:CreateTab("", "library") -- Title, Image
-local MainTab = Window:CreateTab("Main", "blend") -- Title, Image
-local BringTab = Window:CreateTab("Bring", "briefcase") -- Title, Image
-local MoveTab = Window:CreateTab("Teleport", "move") -- Title, Image
+Rayfield:Notify({
+    Title = "Notice",
+    Content = "Some features have changed. Join Discord for updates!",
+    Duration = 16,
+    Image = "file-heart",
+})
+
+local LibTab = Window:CreateTab("", "library")
+local MainTab = Window:CreateTab("Main", "blend")
+local BringTab = Window:CreateTab("Bring", "briefcase")
+local MoveTab = Window:CreateTab("Teleport", "move")
 local ExtrasTab = Window:CreateTab("Menus", "star")
 local TreeTab = Window:CreateTab("Trees", "trees")
 
-local ChestTab = Window:CreateTab("Chests", "package") -- Title, Image
-local SkullTab = Window:CreateTab("Skulls", "skull") -- Title, Image
+local ChestTab = Window:CreateTab("Chests", "package")
+local SkullTab = Window:CreateTab("Skulls", "skull") 
 local BaseTab = Window:CreateTab("Base", "baseline")
 local UpdateTab = Window:CreateTab("UPD", 4483362458)
 local CREDITS = Window:CreateTab("Credits", "users") -- Title, Image
@@ -155,7 +162,7 @@ task.wait()
 local libtab_locals = {
     libsection1 = "libsection1",
     welcomeLabel = "welcomeLabel",
-    libsection1 = "libsection1",
+    libsection12 = "libsection12",
     quest_att = "quest_att",
     q1Label = "q1Label",
     q2Label = "q2Label",
@@ -174,7 +181,7 @@ libtab_locals.libsection1 = LibTab:CreateSection("Hello!")
 
 libtab_locals.welcomeLabel = LibTab:CreateLabel("Welcome "..player.DisplayName.."!", "activity")
 
-libtab_locals.libsection1 = LibTab:CreateSection("Quests:")
+libtab_locals.libsection12 = LibTab:CreateSection("Quests:")
 
 libtab_locals.quest_att = player:GetAttributes()
 
@@ -444,14 +451,29 @@ maintab_locals.HealthToggle = MainTab:CreateToggle({
     Callback = function(Value)
         health_flag = Value
 
-        while health_flag do
-            local args = {
-	            -1/0
-            }
-            game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("DamagePlayer"):FireServer(unpack(args))
-
-            task.wait(1.1)
+        if health_flag then
+            Rayfield:Notify({
+                Title = "! IMPORTANT !",
+                Content = "Invincibility is not usable. Workaround in progress!",
+                Duration = 12,
+                Image = 4483362458,
+            })
+            Rayfield:Notify({
+                Title = "4NTHO is sorry D'x",
+                Content = "The 99NITF devs have made our lives more difficult.",
+                Duration = 8,
+                Image = 4483362458,
+            })
         end
+
+        --while health_flag do
+        --    local args = {
+	    --        -1/0
+        --    }
+        --    game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("DamagePlayer"):FireServer(unpack(args))
+        --
+        --    task.wait(1.1)
+        --end
     end,
 })
 
@@ -894,7 +916,7 @@ maintab_locals.autoSHButton = MainTab:CreateToggle({ -- workspace.Map.Landmarks.
     end,
 })
 
-maintab_locals.strongholdtablabel1 = MainTab:CreateLabel("Player will teleport around to ensure initiation", "rss")
+maintab_locals.strongholdtablabel1 = MainTab:CreateLabel("Not recommended without Invincibility", "forward")
 
 local fishSuccessArea = game:GetService("Players").LocalPlayer.PlayerGui.Interface.FishingCatchFrame.TimingBar.SuccessArea
 
@@ -1713,8 +1735,8 @@ update_tab_locals = {
 }
 
 update_tab_locals.updInfoLabel = UpdateTab:CreateLabel("Weekly update focused functions", 4483362458)
-update_tab_locals.updInfoLabel2 = UpdateTab:CreateLabel("Game update pending...", 4483362458)
-update_tab_locals.updInfoLabel3 = UpdateTab:CreateLabel("Please check back soon", 4483362458)
+update_tab_locals.updInfoLabel2 = UpdateTab:CreateLabel("Latest Gem Code: forestwakesup26", 4483362458)
+update_tab_locals.updInfoLabel3 = UpdateTab:CreateLabel("Improvements are being made. More info soon.", 4483362458)
 update_tab_locals.discord_lecture = UpdateTab:CreateSection("Join the Discord for a chance to win a free Key every week!")
 --
 --local function basiceggs()
